@@ -15,7 +15,7 @@ public class AboutInfo extends JPanel {
 	public AboutInfo() {
 		JTextPane tempArea = new JTextPane();
 		String tempVersion = getVersionInfo();
-		String tempCVS = "http://code.google.com/p/projecttaskcapturing/source/browse/#svn/trunk/PTC";
+		String tempCVS = "https://github.com/quaddy-services/projekt-task-capturing";
 		String tempHome = "http://PTC.Quaddy-Services.de/";
 		String tempJavaRegValue = "HKEY_LOCAL_MACHINE\\SOFTWARE\\JavaSoft\\Java Runtime Environment";
 		// https:// bugs.eclipse.org/bugs/show_bug.cgi?id=199684
@@ -37,13 +37,13 @@ public class AboutInfo extends JPanel {
 		tempHtml.append("<p>");
 		tempHtml.append("<b>System: </b>");
 		tempHtml.append("<br>");
-		tempHtml.append("java.runtime.name="+System.getProperty("java.runtime.name"));
+		tempHtml.append("java.runtime.name=" + System.getProperty("java.runtime.name"));
 		tempHtml.append("<br>");
-		tempHtml.append("java.runtime.version="+System.getProperty("java.runtime.version"));
+		tempHtml.append("java.runtime.version=" + System.getProperty("java.runtime.version"));
 		tempHtml.append("<br>");
-		tempHtml.append("java.home="+System.getProperty("java.home"));
+		tempHtml.append("java.home=" + System.getProperty("java.home"));
 		tempHtml.append("<br>");
-		tempHtml.append("(comes from "+tempJavaRegValue+")");
+		tempHtml.append("(comes from " + tempJavaRegValue + ")");
 
 		tempHtml.append("<p><font size=2>Copyright (c) 2007-2008: Stefan Cordes</font></p>");
 		tempHtml.append("</body>");
@@ -56,8 +56,7 @@ public class AboutInfo extends JPanel {
 	private String getVersionInfo() {
 		try {
 			InputStream tempIn = getClass().getResourceAsStream("/version.txt");
-			BufferedReader tempRead = new BufferedReader(new InputStreamReader(
-					tempIn));
+			BufferedReader tempRead = new BufferedReader(new InputStreamReader(tempIn));
 			String tempVersion;
 			tempVersion = tempRead.readLine();
 			tempRead.close();
