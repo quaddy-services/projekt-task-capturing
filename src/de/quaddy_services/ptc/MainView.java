@@ -92,8 +92,7 @@ public class MainView extends JPanel {
 
 	private Icon loadImage(String aString) {
 		URL tempURL = getClass().getResource("/" + aString);
-		return new ImageIcon(new ImageIcon(tempURL).getImage()
-				.getScaledInstance(10, 10, 0));
+		return new ImageIcon(new ImageIcon(tempURL).getImage().getScaledInstance(10, 10, 0));
 	}
 
 	/**
@@ -142,8 +141,7 @@ public class MainView extends JPanel {
 		if (taskNameBox == null) {
 			taskNameBox = new JComboBox();
 			Font tempFont = taskNameBox.getFont();
-			taskNameBox.setFont(new Font(tempFont.getFamily(), tempFont
-					.getStyle(), tempFont.getSize() - 2));
+			taskNameBox.setFont(new Font(tempFont.getFamily(), tempFont.getStyle(), tempFont.getSize() - 2));
 			taskNameBox.setEditable(true);
 			taskNameBox.setMaximumRowCount(30);
 		}
@@ -161,8 +159,7 @@ public class MainView extends JPanel {
 				}
 			}
 		});
-		final JTextField tempEditor = (JTextField) taskNameBox.getEditor()
-				.getEditorComponent();
+		final JTextField tempEditor = (JTextField) taskNameBox.getEditor().getEditorComponent();
 		Document tempDocument = tempEditor.getDocument();
 		tempDocument.addDocumentListener(new DocumentListener() {
 			private void changed() {
@@ -193,7 +190,7 @@ public class MainView extends JPanel {
 		if (menuButton == null) {
 			menuButton = new JButton();
 			menuButton.setText(null);
-			menuButton.setIcon(loadImage("AppleMenuitems.gif"));
+			menuButton.setIcon(loadImage("Menuitems.gif"));
 			menuButton.setToolTipText("Open Menu");
 			menuButton.setMargin(new Insets(0, 0, 0, 0));
 			menuButton.addActionListener(new ActionListener() {
@@ -301,18 +298,16 @@ public class MainView extends JPanel {
 	private JPopupMenu createSpeedlinkMenu() {
 		List<String> tempTaskNames = new ArrayList<String>();
 		for (int i = 0; i < getTaskNameBox().getModel().getSize(); i++) {
-			String tempTaskName = (String) getTaskNameBox().getModel()
-					.getElementAt(i);
+			String tempTaskName = (String) getTaskNameBox().getModel().getElementAt(i);
 			tempTaskNames.add(tempTaskName);
 		}
-		SpeedLinkMenuCreator tempSpeedLinkMenuCreator = new SpeedLinkMenuCreator(
-				controller.getFixedTaskNames(), model.getTaskDelimiter()
-						.getDelimiter(), new ActionListener() {
-					public void actionPerformed(ActionEvent aE) {
-						getTaskNameBox().setSelectedItem(aE.getActionCommand());
-						// getController().otherTaskName(aE.getActionCommand());
-					}
-				});
+		SpeedLinkMenuCreator tempSpeedLinkMenuCreator = new SpeedLinkMenuCreator(controller.getFixedTaskNames(), model
+				.getTaskDelimiter().getDelimiter(), new ActionListener() {
+			public void actionPerformed(ActionEvent aE) {
+				getTaskNameBox().setSelectedItem(aE.getActionCommand());
+				// getController().otherTaskName(aE.getActionCommand());
+			}
+		});
 		return tempSpeedLinkMenuCreator.createSpeedlinkMenu(tempTaskNames);
 	}
 
@@ -339,27 +334,22 @@ public class MainView extends JPanel {
 		if (tempComboModel.getSize() > 0) {
 			getTaskNameBox().setSelectedIndex(0);
 			// Make initial task pending.
-			getController().otherTaskName(
-					(String) getTaskNameBox().getSelectedItem());
+			getController().otherTaskName((String) getTaskNameBox().getSelectedItem());
 		}
 		initTaskNameBoxListeners();
 	}
 
 	public void newTaskPending() {
 		Font tempFont = getTaskNameBox().getFont();
-		getTaskNameBox().setFont(
-				new Font(tempFont.getFontName(), Font.ITALIC, tempFont
-						.getSize()));
+		getTaskNameBox().setFont(new Font(tempFont.getFontName(), Font.ITALIC, tempFont.getSize()));
 		getTaskNameBox().setForeground(Color.BLUE);
 	}
 
 	public void newTaskAccepted(String aNewTaskName) {
 		Font tempFont = getTaskNameBox().getFont();
-		getTaskNameBox().setFont(
-				new Font(tempFont.getFontName(), 0, tempFont.getSize()));
+		getTaskNameBox().setFont(new Font(tempFont.getFontName(), 0, tempFont.getSize()));
 		getTaskNameBox().setForeground(Color.BLACK);
-		DefaultComboBoxModel tempModel = (DefaultComboBoxModel) getTaskNameBox()
-				.getModel();
+		DefaultComboBoxModel tempModel = (DefaultComboBoxModel) getTaskNameBox().getModel();
 		tempModel.removeElement(aNewTaskName);
 		tempModel.insertElementAt(aNewTaskName, 0);
 		getTaskNameBox().setSelectedItem(aNewTaskName);
