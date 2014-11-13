@@ -95,9 +95,9 @@ public class MainModel {
 		}
 		StringTokenizer tempNumbers = new StringTokenizer(aProperty, ",");
 		Rectangle tempRectangle = new Rectangle();
-		tempRectangle.setBounds(new Integer(tempNumbers.nextToken()).intValue(), new Integer(tempNumbers.nextToken())
-				.intValue(), new Integer(tempNumbers.nextToken()).intValue(), new Integer(tempNumbers.nextToken())
-				.intValue());
+		tempRectangle.setBounds(new Integer(tempNumbers.nextToken()).intValue(),
+				new Integer(tempNumbers.nextToken()).intValue(), new Integer(tempNumbers.nextToken()).intValue(),
+				new Integer(tempNumbers.nextToken()).intValue());
 		return tempRectangle;
 	}
 
@@ -156,6 +156,14 @@ public class MainModel {
 		return getProperties().getProperty(Preferences.ENTERPRISE_SERVER, "");
 	}
 
+	public Short getReminderFlashOnMinute() {
+		try {
+			return new Short(getProperties().getProperty(Preferences.REMINDER_FLASH_ON_MINUTE, "57"));
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
 	public TimeFormat getTimeFormat() {
 		TimeFormat tempTimeFormat = TimeFormatList.getTimeFormat(getProperties().getProperty(Preferences.TIME_FORMAT));
 		if (tempTimeFormat == null) {
@@ -166,7 +174,7 @@ public class MainModel {
 	}
 
 	public boolean isAlwaysOnTop() {
-		return Boolean.valueOf(getProperties().getProperty(Preferences.ALWAYS_ON_TOP, Boolean.TRUE.toString()));
+		return Boolean.valueOf(getProperties().getProperty(Preferences.ALWAYS_ON_TOP, Boolean.FALSE.toString()));
 	}
 
 }

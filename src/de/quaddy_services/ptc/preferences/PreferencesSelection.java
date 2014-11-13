@@ -1,6 +1,5 @@
 package de.quaddy_services.ptc.preferences;
 
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -26,6 +25,7 @@ public class PreferencesSelection extends JPanel {
 	private JComboBox timeFormat = new JComboBox();
 	private JTextField enterpriseServer = new JTextField();
 	private JCheckBox alwaysOnTop = new JCheckBox();
+	private JTextField reminderFlashOnMinute = new JTextField();
 
 	public PreferencesSelection() {
 		setOpaque(false);
@@ -101,6 +101,12 @@ public class PreferencesSelection extends JPanel {
 
 		x = 0;
 		y++;
+		add(new JLabel("Reminderflash on Minute:"), createGrid(x, y));
+		x++;
+		add(reminderFlashOnMinute, createGrid(x, y));
+
+		x = 0;
+		y++;
 		add(new JLabel(""), createGrid(x, y));
 
 		y++;
@@ -120,7 +126,8 @@ public class PreferencesSelection extends JPanel {
 		groupBy.setSelectedItem(GroupByList.DEFAULT);
 		timeFormat.setSelectedItem(TimeFormatList.DEFAULT);
 		enterpriseServer.setText("");
-		alwaysOnTop.setSelected(true);
+		alwaysOnTop.setSelected(false);
+		reminderFlashOnMinute.setText("57");
 	}
 
 	private GridBagConstraints createGrid(int aI, int aY) {
@@ -143,7 +150,9 @@ public class PreferencesSelection extends JPanel {
 		timeFormat.setSelectedItem(aProperties.getProperty(Preferences.TIME_FORMAT, TimeFormatList.DEFAULT));
 		groupBy.setSelectedItem(aProperties.getProperty(Preferences.GROUP_BY, GroupByList.DEFAULT));
 		enterpriseServer.setText(aProperties.getProperty(Preferences.ENTERPRISE_SERVER, ""));
-		alwaysOnTop.setSelected(Boolean.valueOf(aProperties.getProperty(Preferences.ALWAYS_ON_TOP, "" + Boolean.TRUE)));
+		alwaysOnTop
+				.setSelected(Boolean.valueOf(aProperties.getProperty(Preferences.ALWAYS_ON_TOP, "" + Boolean.FALSE)));
+		reminderFlashOnMinute.setText(aProperties.getProperty(Preferences.REMINDER_FLASH_ON_MINUTE, "57"));
 	}
 
 	public Properties getValues() {
@@ -154,6 +163,7 @@ public class PreferencesSelection extends JPanel {
 		tempProperties.setProperty(Preferences.GROUP_BY, (String) groupBy.getSelectedItem());
 		tempProperties.setProperty(Preferences.ENTERPRISE_SERVER, enterpriseServer.getText());
 		tempProperties.setProperty(Preferences.ALWAYS_ON_TOP, "" + alwaysOnTop.isSelected());
+		tempProperties.setProperty(Preferences.REMINDER_FLASH_ON_MINUTE, reminderFlashOnMinute.getText());
 		return tempProperties;
 	}
 }

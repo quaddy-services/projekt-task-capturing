@@ -105,6 +105,7 @@ public class MainController {
 		repeatingTimer = new Timer(10000, new ActionListener() {
 			public void actionPerformed(ActionEvent aE) {
 				timerRepeats();
+				reminderFlash();
 			}
 		});
 		repeatingTimer.start();
@@ -118,6 +119,32 @@ public class MainController {
 		};
 		tempShutdownPendingDetector.setName(tempShutdownPendingDetector.getName() + "ShutdownPendingDetector");
 		Runtime.getRuntime().addShutdownHook(tempShutdownPendingDetector);
+	}
+
+	private int lastReminderFlash = -1;
+
+	protected void reminderFlash() {
+		Short tempReminderFlashOnMinute = model.getReminderFlashOnMinute();
+		if (tempReminderFlashOnMinute != null) {
+			int tempCurrentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+			if (lastReminderFlash == tempCurrentHour) {
+				return;
+			}
+			int tempCurrentMinute = Calendar.getInstance().get(Calendar.MINUTE);
+			if (tempCurrentMinute == tempReminderFlashOnMinute.intValue()) {
+				lastReminderFlash = tempCurrentHour;
+				reminderFlashNow();
+			}
+		}
+
+	}
+
+	private void reminderFlashNow() {
+		LOG.info("Reminder flash");
+		JFrame tempFrame = getFrame();
+		tempFrame.toFront();
+		tempFrame.setExtendedState(JFrame.ICONIFIED);
+		tempFrame.setExtendedState(JFrame.NORMAL);
 	}
 
 	private void setMainViewModel() throws IOException {
@@ -583,8 +610,8 @@ public class MainController {
 			long tempTo = tempCal.getTimeInMillis();
 			tempCal.add(Calendar.DAY_OF_YEAR, -7);
 			long tempFrom = tempCal.getTimeInMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model
-					.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
+			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(),
+					model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY),
 					GroupByList.getGroupBy(GroupByList.NONE) };
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
@@ -623,8 +650,8 @@ public class MainController {
 			long tempFrom = tempCal.getTimeInMillis();
 			tempCal.add(Calendar.DAY_OF_YEAR, +7);
 			long tempTo = tempCal.getTimeInMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model
-					.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
+			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(),
+					model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY),
 					GroupByList.getGroupBy(GroupByList.NONE) };
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
@@ -641,13 +668,13 @@ public class MainController {
 			tempReportSelection.setTimeFormat(model.getTimeFormat());
 			boolean tempOk = DisplayHelper.displayComponent(frame, "Select Report...", tempReportSelection);
 			if (tempOk) {
-				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model
-						.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
+				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(),
+						model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
 				long tempFrom = tempReportSelection.getFrom();
 				long tempTo = tempReportSelection.getTo();
 				List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
-				tempTaskReport.showReport(tempFrom, tempTo, tempReportSelection.getGroupBys(), tempReportSelection
-						.getTimeFormat(), tempActions);
+				tempTaskReport.showReport(tempFrom, tempTo, tempReportSelection.getGroupBys(),
+						tempReportSelection.getTimeFormat(), tempActions);
 			}
 		} catch (Throwable e) {
 			handleException(e);
@@ -750,7 +777,7 @@ public class MainController {
 
 	private void acceptNewTask(final String aString) {
 		if (shutdownPending) {
-			LOG.info("Do not acceptNewTask "+aString+" as shutdownPending");
+			LOG.info("Do not acceptNewTask " + aString + " as shutdownPending");
 			return;
 		}
 		inTaskAccepting = true;
