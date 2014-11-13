@@ -1,0 +1,129 @@
+07.09.2011
+<ul>
+	<li>No Timer events when ShutdownHook is active (to avoid deadlock when shutting down windows 7 having ptc open)</li>
+</ul>
+05.09.2011
+<ul>
+	<li>Simplify application exit to avoid deadlock when shutting down windows 7 having ptc open.</li>
+</ul>
+02.08.2011
+<ul>
+	<li>Avoid deadlock on shutdown.</li>
+</ul>
+18.07.2011
+<ul>
+	<li>Allow setting alwaysOnTop to false.</li>
+</ul>
+12.07.2011
+<ul>
+	<li>Remove javaexe.</li>
+	<li>Save state on shutdown.</li>
+</ul>
+26.06.2011
+<ul>
+	<li>Option to setDataFolder in FileUtil.</li>
+</ul>
+15.06.2011
+<ul>
+	<li>Integrate PTC Server.</li>
+	<li>Allow integrating in local Booking-System VM via
+	MainController.setEnterpriseUtil(EnterpriseUtilRemote) and
+	AbstractEnterpriseUtilRemote.</li>
+</ul>
+17.01.2011
+<ul>
+	<li>Stop counting when process is killed.</li>
+	<li>Show current task in icon as colors.</li>
+</ul>
+08.07.2010
+<ul>
+	<li>Start via Java Webstart.
+</ul>
+08.09.2008
+<ul>
+	<li>Edit tasks dialog: Fields become larger on resizing.
+	<li>PrettyFormat Report can be switched off.
+</ul>
+21.08.2008
+<ul>
+	<li>Backup ptc.properties file.
+</ul>
+19.08.2008
+<ul>
+	<li>No more NullPointer with frameContentBounds.
+</ul>
+15.08.2008
+<ul>
+	<li>Empty Button is not visible if PTC Enterprise is off.
+</ul>
+04.06.2008
+<ul>
+	<li>Save reports to booking system (PTC Enterprise)
+</ul>
+29.05.2008
+<ul>
+	<li>Task-Editor is not on top
+	<li>Task-Editor does not allow to enter fixed tasks (PTC
+	Enterprise)
+	<li>In small files the first line is available in editor.
+</ul>
+27.05.2008
+<ul>
+	<li>Errors when starting on clean PC solved.
+</ul>
+17.05.2008
+<ul>
+	<li>Last 10 seconds of task are saved when program exits.
+	<li>Support for fixed user tasks (PTC Enterprise)
+	<li>Setup routine changed (overwriting existing files without
+	uninstall possible)
+</ul>
+06.05.2008
+<ul>
+	<li>Sum by day can be selected between 8 hours or 24 hours
+	<li>Group by 'year' added.
+	<li>Custom reports start date is in the past now.
+</ul>
+20.04.2008
+<ul>
+	<li>Avoid saving invalid bounds when shutdowning (x<100)
+</ul>
+15.03.2008
+<ul>
+	<li>Correct formatting of Title
+	<li>More logging for frame bounds
+</ul>
+16.01.2008
+<ul>
+	<li>Report can be created with sum in days.
+</ul>
+21.11.2007
+<ul>
+	<li>Before starting the editor the pendig task change is commited.
+	
+</ul>
+05.11.2007
+<ul>
+	<li>Open speed task selection added (quick, sorted list of recent
+	tasks).
+</ul>
+30.10.2007
+<ul>
+	<li>BugFix: Editor overwrites first tasks instead of appending.
+	<li>Switched Build-Tool Maven2 (mvn).
+</ul>
+29.10.2007
+<ul>
+	<li>Editor for recent Tasks.
+	<li>Task file is backup up on start and before edit (to
+	%userprofile%\ptc)
+	<li>'Day of week' is displayed in report.
+</ul>
+09.10.2007
+<ul>
+	<li>Corrected Part-Sum of tasks if user had booked on the sum-task
+	itself <br>
+	(Task1 10:00, Task1 2 5:00 -&gt; Display Task1 5:00) <br>
+	Total-sum was correct.
+</ul>
+03.09.2007
