@@ -104,6 +104,8 @@ public class PreferencesSelection extends JPanel {
 		add(new JLabel("Reminderflash on Minute:"), createGrid(x, y));
 		x++;
 		add(reminderFlashOnMinute, createGrid(x, y));
+		reminderFlashOnMinute
+				.setToolTipText("Flash every hour on specified minute. Default=57. To disable clear field.");
 
 		x = 0;
 		y++;

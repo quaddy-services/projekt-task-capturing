@@ -158,7 +158,11 @@ public class MainModel {
 
 	public Short getReminderFlashOnMinute() {
 		try {
-			return new Short(getProperties().getProperty(Preferences.REMINDER_FLASH_ON_MINUTE, "57"));
+			String tempFlashMinutesString = getProperties().getProperty(Preferences.REMINDER_FLASH_ON_MINUTE, "57");
+			if (tempFlashMinutesString == null || tempFlashMinutesString.trim().length() == 0) {
+				return null;
+			}
+			return Short.valueOf(tempFlashMinutesString);
 		} catch (NumberFormatException e) {
 			return null;
 		}
