@@ -85,8 +85,7 @@ public class DisplayHelper {
 		displayText(aFrame, aTitle, aText, aModalFlag, null);
 	}
 
-	private static void displayTextPrivate(JFrame aFrame, String aTitle, String aText, boolean aModalFlag,
-			List<Action> anActions) {
+	private static void displayTextPrivate(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions) {
 		final JDialog tempDialog = new JDialog(aFrame, aTitle);
 		tempDialog.setModal(aModalFlag);
 		Dimension tempScreen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -110,8 +109,7 @@ public class DisplayHelper {
 		if (anActions != null) {
 			tempActions.addAll(anActions);
 		}
-		tempDialog.getContentPane().add(createButtons(tempActions.toArray(new Action[tempActions.size()])),
-				BorderLayout.SOUTH);
+		tempDialog.getContentPane().add(createButtons(tempActions.toArray(new Action[tempActions.size()])), BorderLayout.SOUTH);
 		tempDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		tempDialog.setAlwaysOnTop(false);
 		tempDialog.setVisible(true);
@@ -171,10 +169,9 @@ public class DisplayHelper {
 		final List<Boolean> tempResult = new LinkedList<Boolean>();
 		Dimension tempScreen = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension tempPref = aComponent.getPreferredSize();
-		tempDialog.setSize(Math.max(500, Math.min(tempPref.width + 150, tempScreen.width * 8 / 10)), Math.max(500, Math
-				.min(tempPref.height + 100, tempScreen.height * 17 / 20)));
-		tempDialog.setLocation((tempScreen.width - tempDialog.getWidth()) / 2, (tempScreen.height - tempDialog
-				.getHeight()) / 2);
+		tempDialog.setSize(Math.max(500, Math.min(tempPref.width + 150, tempScreen.width * 8 / 10)),
+				Math.max(200, Math.min(tempPref.height + 100, tempScreen.height * 17 / 20)));
+		tempDialog.setLocation((tempScreen.width - tempDialog.getWidth()) / 2, (tempScreen.height - tempDialog.getHeight()) / 2);
 		tempDialog.getContentPane().setLayout(new GridBagLayout());
 		GridBagConstraints tempGBC = new GridBagConstraints();
 		tempGBC.fill = GridBagConstraints.BOTH;
@@ -198,8 +195,7 @@ public class DisplayHelper {
 			}
 		};
 		tempGBC.gridy++;
-		tempDialog.getContentPane().add(createButtons(new Action[] { tempActionListener, tempCancelActionListener }),
-				tempGBC);
+		tempDialog.getContentPane().add(createButtons(new Action[] { tempActionListener, tempCancelActionListener }), tempGBC);
 		tempDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		tempDialog.setAlwaysOnTop(false);
 		tempDialog.setModal(true);

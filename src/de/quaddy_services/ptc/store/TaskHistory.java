@@ -20,7 +20,7 @@ import java.util.StringTokenizer;
 public class TaskHistory implements TaskUpdater {
 
 	/**
-	 * 
+	 *
 	 */
 	public static final String TASK_CLOSED = "PTCEXIT";
 	public static final String TASK_STARTED = "PTCSTART";
@@ -32,6 +32,7 @@ public class TaskHistory implements TaskUpdater {
 	public TaskHistory() {
 		super();
 	}
+
 	public File getActualFile() {
 		String tempFileName = FileUtil.getDataFolder();
 		return new File(tempFileName + "/" + getFileName());
@@ -39,7 +40,7 @@ public class TaskHistory implements TaskUpdater {
 
 	/**
 	 * return current Task time.
-	 * 
+	 *
 	 * @param aTaskName
 	 * @return
 	 * @throws IOException
@@ -140,7 +141,7 @@ public class TaskHistory implements TaskUpdater {
 		backupFile();
 		List<PosAndContent<Task>> tempList = new ArrayList<PosAndContent<Task>>();
 		RandomAccessFile aContent = new RandomAccessFile(getActualFile(), "r");
-		int aOffset = 3000;
+		int aOffset = 1000;
 		long tempSize = aContent.length();
 		long tempPos = Math.max(0, tempSize - aOffset);
 		aContent.seek(tempPos);
@@ -203,8 +204,7 @@ public class TaskHistory implements TaskUpdater {
 	private byte[] format(Task aTask) {
 		String tempString;
 		if (isSameDay(aTask.getStart(), aTask.getStop())) {
-			tempString = aTask.getName() + "\t" + DATE_FORMAT.format(aTask.getStart()) + "\t"
-					+ DATE_FORMAT.format(aTask.getStop()) + "\r\n";
+			tempString = aTask.getName() + "\t" + DATE_FORMAT.format(aTask.getStart()) + "\t" + DATE_FORMAT.format(aTask.getStop()) + "\r\n";
 		} else {
 			Calendar tempCal = Calendar.getInstance();
 			tempCal.setTime(aTask.getStart());
@@ -212,8 +212,7 @@ public class TaskHistory implements TaskUpdater {
 			tempCal.set(Calendar.MINUTE, 59);
 			tempCal.set(Calendar.SECOND, 59);
 			tempCal.set(Calendar.MILLISECOND, 900);
-			tempString = aTask.getName() + "\t" + DATE_FORMAT.format(aTask.getStart()) + "\t"
-					+ DATE_FORMAT.format(tempCal.getTime()) + "\r\n";
+			tempString = aTask.getName() + "\t" + DATE_FORMAT.format(aTask.getStart()) + "\t" + DATE_FORMAT.format(tempCal.getTime()) + "\r\n";
 
 			tempCal = Calendar.getInstance();
 			tempCal.setTime(aTask.getStop());
@@ -221,8 +220,7 @@ public class TaskHistory implements TaskUpdater {
 			tempCal.set(Calendar.MINUTE, 0);
 			tempCal.set(Calendar.SECOND, 0);
 			tempCal.set(Calendar.MILLISECOND, 0);
-			tempString += aTask.getName() + "\t" + DATE_FORMAT.format(tempCal.getTime()) + "\t"
-					+ DATE_FORMAT.format(aTask.getStop()) + "\r\n";
+			tempString += aTask.getName() + "\t" + DATE_FORMAT.format(tempCal.getTime()) + "\t" + DATE_FORMAT.format(aTask.getStop()) + "\r\n";
 		}
 		return tempString.getBytes();
 	}
@@ -330,7 +328,7 @@ public class TaskHistory implements TaskUpdater {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return Last tasks ordered by usage.
 	 * @throws IOException
 	 */
