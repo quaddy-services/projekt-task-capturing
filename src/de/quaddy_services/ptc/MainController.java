@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package de.quaddy_services.ptc;
 
@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -45,6 +47,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicBorders;
@@ -67,7 +70,7 @@ import de.quaddy_services.report.gui.ReportSelection;
 
 /**
  * @author Stefan Cordes
- * 
+ *
  */
 public class MainController {
 	private Log LOG = new Log(this.getClass());
@@ -407,8 +410,8 @@ public class MainController {
 		tempFileWriter.close();
 	}
 
-	private static final Color[] COLORS = new Color[] { Color.RED, Color.BLUE, Color.CYAN, Color.MAGENTA,
-			Color.DARK_GRAY, Color.WHITE, Color.GREEN, Color.GRAY };
+	private static final Color[] COLORS = new Color[] { Color.RED, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.DARK_GRAY, Color.WHITE, Color.GREEN,
+			Color.GRAY };
 
 	private void updateFrame(Task aCurrentTask) {
 		if (aCurrentTask == null) {
@@ -462,6 +465,7 @@ public class MainController {
 
 	private static final DateFormat TIME_HOUR_FORMAT = new SimpleDateFormat("HH:mm");
 	private static final DateFormat TIME_MINUTE_FORMAT = new SimpleDateFormat("mm:ss");
+	private static final long ONE_HOUR_IN_MILLIS = 3600l * 1000l;
 
 	private String formatTitleTime(Task aCurrentTask) {
 		Calendar tempCal = Calendar.getInstance();
@@ -505,8 +509,7 @@ public class MainController {
 	public void toggleFrameDecorator() {
 		if (model.isFrameDecorated()) {
 			model.setFrameBounds(getFrame().getBounds());
-			model.setFrameContentBounds(new Rectangle(getFrame().getLocationOnScreen(), getFrame().getContentPane()
-					.getSize()));
+			model.setFrameContentBounds(new Rectangle(getFrame().getLocationOnScreen(), getFrame().getContentPane().getSize()));
 		}
 		boolean tempNewIsFrameDecorated = !model.isFrameDecorated();
 		model.setFrameDecorated(tempNewIsFrameDecorated);
@@ -552,7 +555,7 @@ public class MainController {
 				acceptNewTask(aString);
 			}
 		};
-		Timer tempTimer = new Timer(30000, taskAcceptActionListener);
+		Timer tempTimer = new Timer(10000, taskAcceptActionListener);
 		mainView.newTaskPending();
 		tempTimer.setRepeats(false);
 		tempTimer.start();
@@ -565,11 +568,29 @@ public class MainController {
 
 	private EnterpriseUtilRemote enterpriseUtil = new EnterpriseUtil();
 
+	private long lastTimerRepeats = System.currentTimeMillis();
+
 	private void timerRepeats() {
 		if (shutdownPending) {
 			LOG.info("Do not timerRepeats as shutdownPending");
 			return;
 		}
+		if (lastTimerRepeats + ONE_HOUR_IN_MILLIS  < System.currentTimeMillis()) {
+			BigDecimal tempHours = new BigDecimal(System.currentTimeMillis() - lastTimerRepeats).divide(new BigDecimal(ONE_HOUR_IN_MILLIS), 2,
+					RoundingMode.HALF_UP);
+			String tempActualTaskName = model.getCurrentTask();
+			JLabel tempInfo = new JLabel("Add " + tempHours + " hours to " + tempActualTaskName + "?");
+			boolean tempContinue = DisplayHelper.displayComponent(frame, "Confirm Task", tempInfo);
+			if (tempContinue) {
+				// ok
+			} else {
+				String tempSuspendTaskName = model.getDontSumChar().getChar() + "suspended";
+				timerNewTask(tempSuspendTaskName);
+				timerNewTask(tempActualTaskName);
+				taskAcceptTimer = null;
+			}
+		}
+		lastTimerRepeats = System.currentTimeMillis();
 		saveApplicationStateToModel(false);
 		if (taskAcceptTimer == null) {
 			// Suspend save until new task is "commited"
@@ -610,10 +631,9 @@ public class MainController {
 			long tempTo = tempCal.getTimeInMillis();
 			tempCal.add(Calendar.DAY_OF_YEAR, -7);
 			long tempFrom = tempCal.getTimeInMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(),
-					model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY),
-					GroupByList.getGroupBy(GroupByList.NONE) };
+			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
+					enterpriseUtil.getFixedTaskNames());
+			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Throwable e) {
@@ -650,10 +670,9 @@ public class MainController {
 			long tempFrom = tempCal.getTimeInMillis();
 			tempCal.add(Calendar.DAY_OF_YEAR, +7);
 			long tempTo = tempCal.getTimeInMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(),
-					model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY),
-					GroupByList.getGroupBy(GroupByList.NONE) };
+			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
+					enterpriseUtil.getFixedTaskNames());
+			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Throwable e) {
@@ -668,13 +687,12 @@ public class MainController {
 			tempReportSelection.setTimeFormat(model.getTimeFormat());
 			boolean tempOk = DisplayHelper.displayComponent(frame, "Select Report...", tempReportSelection);
 			if (tempOk) {
-				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(),
-						model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
+				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
+						enterpriseUtil.getFixedTaskNames());
 				long tempFrom = tempReportSelection.getFrom();
 				long tempTo = tempReportSelection.getTo();
 				List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
-				tempTaskReport.showReport(tempFrom, tempTo, tempReportSelection.getGroupBys(),
-						tempReportSelection.getTimeFormat(), tempActions);
+				tempTaskReport.showReport(tempFrom, tempTo, tempReportSelection.getGroupBys(), tempReportSelection.getTimeFormat(), tempActions);
 			}
 		} catch (Throwable e) {
 			handleException(e);
