@@ -8,7 +8,7 @@ public class FileUtil {
 	public static String getDataFolder() {
 		if (dataFolder == null) {
 			String tempFileName = System.getProperty("user.home");
-			tempFileName.replace('\\', '/');
+			tempFileName = tempFileName.replace('\\', '/');
 			if (!tempFileName.endsWith("/")) {
 				tempFileName += "/";
 			}
