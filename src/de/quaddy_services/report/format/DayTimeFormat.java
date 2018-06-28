@@ -19,6 +19,7 @@ public class DayTimeFormat implements TimeFormat {
 
 	private DecimalFormat format = new DecimalFormat("00.00");
 
+	@Override
 	public String format(long aTimeInMillis) {
 		double tempCalc = aTimeInMillis;
 		int tempOneHour = 60 * 60 * 1000;
@@ -29,15 +30,18 @@ public class DayTimeFormat implements TimeFormat {
 
 	private final int FACTOR;
 
+	@Override
 	public long roundToDisplay(long aTimeInMillis) {
 		int tempRounded = Math.round(aTimeInMillis / FACTOR) * FACTOR;
 		return tempRounded;
 	}
 
+	@Override
 	public int maxLength() {
 		return 5;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

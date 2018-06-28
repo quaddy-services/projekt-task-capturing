@@ -17,6 +17,7 @@ public class TimeTimeFormat implements TimeFormat {
 
 	private Format format = new SimpleDateFormat("HH:mm");
 
+	@Override
 	public String format(long aTimeInMillis) {
 		Calendar tempCal = Calendar.getInstance();
 		tempCal.clear();
@@ -25,14 +26,17 @@ public class TimeTimeFormat implements TimeFormat {
 		return tempFormated;
 	}
 
+	@Override
 	public int maxLength() {
 		return 5;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public long roundToDisplay(long aTimeInMillis) {
 		// Round to minutes
 		return Math.round(aTimeInMillis / (60 * 1000)) * (60 * 1000);

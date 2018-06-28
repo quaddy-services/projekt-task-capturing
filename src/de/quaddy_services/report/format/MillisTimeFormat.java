@@ -13,18 +13,22 @@ public class MillisTimeFormat implements TimeFormat {
 		name = aName;
 	}
 
+	@Override
 	public String format(long aTimeInMillis) {
 		return "" + aTimeInMillis;
 	}
 
+	@Override
 	public int maxLength() {
 		return LENGTH;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public long roundToDisplay(long aTimeInMillis) {
 		return aTimeInMillis;
 	}

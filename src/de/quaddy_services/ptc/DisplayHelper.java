@@ -60,6 +60,7 @@ public class DisplayHelper {
 		tempScrollPane.add(tempEditorPane);
 		tempDialog.getContentPane().add(tempScrollPane, BorderLayout.CENTER);
 		Action tempActionListener = new AbstractAction("OK") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempDialog.dispose();
 			}
@@ -100,6 +101,7 @@ public class DisplayHelper {
 		tempScrollPane.add(tempEditorPane);
 		tempDialog.getContentPane().add(tempScrollPane, BorderLayout.CENTER);
 		Action tempActionListener = new AbstractAction("OK") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempDialog.dispose();
 			}
@@ -155,6 +157,7 @@ public class DisplayHelper {
 		tempScrollPane.add(new AboutInfo());
 		tempDialog.getContentPane().add(tempScrollPane, BorderLayout.CENTER);
 		Action tempActionListener = new AbstractAction("OK") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempDialog.dispose();
 			}
@@ -184,12 +187,14 @@ public class DisplayHelper {
 		tempGBC.gridy++;
 		tempDialog.getContentPane().add(new JLabel(" "), tempGBC);
 		Action tempActionListener = new AbstractAction("OK") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempResult.add(Boolean.TRUE);
 				tempDialog.dispose();
 			}
 		};
 		Action tempCancelActionListener = new AbstractAction("Cancel") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempDialog.dispose();
 			}

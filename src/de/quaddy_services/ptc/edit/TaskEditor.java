@@ -23,6 +23,7 @@ public class TaskEditor extends javax.swing.JPanel implements TaskUpdater {
 
 	private TaskEdit lastTask;
 
+	@Override
 	public Task updateLastTask(String aTaskName) {
 		return lastTask.updateLastTask();
 	}

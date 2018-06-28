@@ -17,8 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
+
 public class TaskHistory implements TaskUpdater {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(TaskHistory.class);
 	/**
 	 *
 	 */
@@ -45,6 +49,7 @@ public class TaskHistory implements TaskUpdater {
 	 * @return
 	 * @throws IOException
 	 */
+	@Override
 	public synchronized Task updateLastTask(String aTaskName) throws IOException {
 		Date tempNow = new Date();
 		Task tempTask = new Task(aTaskName, tempNow, tempNow);
@@ -244,10 +249,12 @@ public class TaskHistory implements TaskUpdater {
 
 			private Task nextTask;
 
+			@Override
 			public boolean hasNext() {
 				return nextTask != null;
 			}
 
+			@Override
 			public Task next() {
 				Task tempNextTask = nextTask;
 				try {
@@ -262,6 +269,7 @@ public class TaskHistory implements TaskUpdater {
 				return tempNextTask;
 			}
 
+			@Override
 			public void remove() {
 				throw new RuntimeException("Not supported use updateTaskList()");
 			}

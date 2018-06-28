@@ -23,6 +23,7 @@ class EnterpriseUtilSaveReportThread extends Thread {
 	private Runnable resultRunnable = new Runnable() {
 		// Ensure it's loader on sucessfull execution to show errors
 		// when Server is down on next call.
+		@Override
 		public void run() {
 			if (result instanceof Throwable) {
 				DisplayHelper.displayException(controller.getFrame(), (Throwable) result);

@@ -107,6 +107,7 @@ public class MainController {
 
 		initFrame("PTC", mainView);
 		repeatingTimer = new Timer(10000, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				timerRepeats();
 				reminderFlash();
@@ -256,17 +257,20 @@ public class MainController {
 				super.windowIconified(aE);
 				// When Desktop is shown we get a Windows Iconified.
 				Timer tempTimer = new Timer(3000, new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent aE) {
 						// DeIconify now.
 						int tempState = aFrame.getExtendedState();
 						tempState = tempState & ~Frame.ICONIFIED;
 						// aFrame.setExtendedState(tempState);
 						EventQueue.invokeLater(new Runnable() {
+							@Override
 							public void run() {
 								aFrame.setVisible(false);
 							}
 						});
 						EventQueue.invokeLater(new Runnable() {
+							@Override
 							public void run() {
 								aFrame.setVisible(true);
 							}
@@ -350,6 +354,7 @@ public class MainController {
 				updateFrame(tempCurrentTask);
 			} else {
 				EventQueue.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						updateFrame(tempCurrentTask);
 					}
@@ -553,6 +558,7 @@ public class MainController {
 			taskAcceptTimer.stop();
 		}
 		taskAcceptActionListener = new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				acceptNewTask(aString);
 			}
@@ -736,6 +742,7 @@ public class MainController {
 			editTasksNow();
 		} else {
 			EventQueue.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					waitForTaskTimerAndEditTasks();
 				}

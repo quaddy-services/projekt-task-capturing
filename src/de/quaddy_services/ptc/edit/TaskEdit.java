@@ -68,6 +68,7 @@ public abstract class TaskEdit extends JPanel {
 		add(tempFrom, tempGBC);
 		tempGBC.gridx++;
 		tempFrom.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
 			public void propertyChange(PropertyChangeEvent aEvt) {
 				if ("value".equals(aEvt.getPropertyName())) {
 					aTask.setStart((Date) aEvt.getNewValue());
@@ -83,6 +84,7 @@ public abstract class TaskEdit extends JPanel {
 		add(to, tempGBC);
 		tempGBC.gridx++;
 		to.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
 			public void propertyChange(PropertyChangeEvent aEvt) {
 				if ("value".equals(aEvt.getPropertyName())) {
 					aTask.setStop((Date) aEvt.getNewValue());
@@ -92,6 +94,7 @@ public abstract class TaskEdit extends JPanel {
 
 		final JButton tempButton = new JButton("Delete");
 		tempButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempName.setEnabled(false);
 				tempFrom.setEnabled(false);

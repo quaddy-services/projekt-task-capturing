@@ -12,6 +12,7 @@ import de.quaddy_services.ptc.logging.LoggerFactory;
 public class EnterpriseUtilImpl extends AbstractEnterpriseUtilRemote {
 	private static final Logger LOG = LoggerFactory.getLogger(EnterpriseUtilImpl.class);
 
+	@Override
 	public Action createShowBookingSystemAction(final MainController aController) {
 		return null;
 	}

@@ -98,6 +98,7 @@ public class SpeedLinkMenuCreator {
 
 	private AbstractAction createAction(final String tempTaskName) {
 		return new AbstractAction(tempTaskName) {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				actionListener.actionPerformed(new ActionEvent(aE.getSource(),
 						0, tempTaskName));

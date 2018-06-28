@@ -9,6 +9,7 @@ public abstract class ChangeListener implements DocumentListener {
 
 	public abstract void textChanged(String aNewString);
 
+	@Override
 	public void changedUpdate(DocumentEvent aE) {
 		textChanged(aE.getDocument());
 	}
@@ -21,10 +22,12 @@ public abstract class ChangeListener implements DocumentListener {
 		}
 	}
 
+	@Override
 	public void insertUpdate(DocumentEvent aE) {
 		textChanged(aE.getDocument());
 	}
 
+	@Override
 	public void removeUpdate(DocumentEvent aE) {
 		textChanged(aE.getDocument());
 	}

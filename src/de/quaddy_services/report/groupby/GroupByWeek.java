@@ -18,6 +18,7 @@ public class GroupByWeek extends GroupBy {
 	private Calendar tempCal1 = Calendar.getInstance();
 	private Calendar tempCal2 = Calendar.getInstance();
 
+	@Override
 	public int compare(Task t1, Task t2) {
 		tempCal1.setTime(t1.getStart());
 		tempCal2.setTime(t2.getStart());

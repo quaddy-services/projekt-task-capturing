@@ -128,6 +128,7 @@ public class PreferencesSelection extends JPanel {
 		dataFolder.setToolTipText("Datafolder (change will NOT copy history)");
 		dataFolderSelection.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				selectDataFolder();
 			}
@@ -140,6 +141,7 @@ public class PreferencesSelection extends JPanel {
 		y++;
 		JButton tempRestore = new JButton("Defaults");
 		tempRestore.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				restoreDefaults();
 			}

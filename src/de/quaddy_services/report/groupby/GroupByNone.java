@@ -13,6 +13,7 @@ public class GroupByNone extends GroupBy {
 		return "Total";
 	}
 
+	@Override
 	public int compare(Task aO1, Task aO2) {
 		return 0;
 	}

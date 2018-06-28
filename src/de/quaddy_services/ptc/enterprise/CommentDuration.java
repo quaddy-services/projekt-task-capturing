@@ -26,6 +26,7 @@ public class CommentDuration implements Comparable<CommentDuration> {
 		comment = aComment;
 	}
 
+	@Override
 	public int compareTo(CommentDuration aO) {
 		return -getDuration().compareTo(aO.getDuration());
 	}

@@ -154,6 +154,7 @@ public class MainView extends JPanel {
 	 */
 	private void initTaskNameBoxListeners() {
 		taskNameBox.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent aE) {
 				if (aE.getID() == ItemEvent.SELECTED) {
 					getController().otherTaskName(String.valueOf(aE.getItem()));
@@ -167,14 +168,17 @@ public class MainView extends JPanel {
 				getController().otherTaskName(tempEditor.getText());
 			}
 
+			@Override
 			public void changedUpdate(DocumentEvent aE) {
 				changed();
 			}
 
+			@Override
 			public void insertUpdate(DocumentEvent aE) {
 				changed();
 			}
 
+			@Override
 			public void removeUpdate(DocumentEvent aE) {
 				changed();
 			}
@@ -195,6 +199,7 @@ public class MainView extends JPanel {
 			menuButton.setToolTipText("Open Menu");
 			menuButton.setMargin(new Insets(0, 0, 0, 0));
 			menuButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent aE) {
 					JPopupMenu tempJPopupMenu = createPopUpMenu();
 					tempJPopupMenu.show(getMenuButton(), 8, 8);
@@ -217,6 +222,7 @@ public class MainView extends JPanel {
 			speedlinkButton.setToolTipText("Open speed task selection");
 			speedlinkButton.setMargin(new Insets(0, 0, 0, 0));
 			speedlinkButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent aE) {
 					JPopupMenu tempJPopupMenu = createSpeedlinkMenu();
 					tempJPopupMenu.show(getSpeedlinkButton(), 8, 8);
@@ -240,34 +246,40 @@ public class MainView extends JPanel {
 		}
 		final MainController tempController = getController();
 		tempMenu.add(new AbstractAction(tempInfo) {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempController.toggleFrameDecorator();
 			}
 		});
 		tempMenu.addSeparator();
 		tempMenu.add(new AbstractAction("Show this week") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempController.showThisWeek();
 			}
 		});
 		tempMenu.add(new AbstractAction("Show last week") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempController.showLastWeek();
 			}
 		});
 		tempMenu.add(new AbstractAction("Custom report...") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempController.showCustomReport();
 			}
 		});
 		tempMenu.addSeparator();
 		tempMenu.add(new AbstractAction("Edit Tasks...") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempController.editTasks();
 			}
 		});
 		tempMenu.addSeparator();
 		tempMenu.add(new AbstractAction("Options...") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempController.options();
 			}
@@ -282,12 +294,14 @@ public class MainView extends JPanel {
 		}
 		tempMenu.addSeparator();
 		tempMenu.add(new AbstractAction("About...") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempController.about();
 			}
 		});
 		tempMenu.addSeparator();
 		tempMenu.add(new AbstractAction("Exit") {
+			@Override
 			public void actionPerformed(ActionEvent aE) {
 				LOG.info("User exit");
 				tempController.exitApplicationRequestedByUser();
@@ -304,6 +318,7 @@ public class MainView extends JPanel {
 		}
 		SpeedLinkMenuCreator tempSpeedLinkMenuCreator = new SpeedLinkMenuCreator(controller.getFixedTaskNames(), model.getTaskDelimiter().getDelimiter(),
 				new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent aE) {
 						getTaskNameBox().setSelectedItem(aE.getActionCommand());
 						// getController().otherTaskName(aE.getActionCommand());
