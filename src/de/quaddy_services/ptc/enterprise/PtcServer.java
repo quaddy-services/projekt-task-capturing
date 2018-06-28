@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package de.quaddy_services.ptc.enterprise;
 
@@ -20,18 +20,19 @@ import java.util.concurrent.Executors;
 import de.quaddy_services.ptc.enterprise.custom.PtcFunction;
 import de.quaddy_services.ptc.enterprise.custom.PtcTask;
 import de.quaddy_services.ptc.enterprise.report.EnterpriseReportParser;
-import de.quaddy_services.ptc.log.Log;
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 
 /**
  * Run a server component on Port 334.
- * 
+ *
  * Specify your own Booking-Adapter via
  * PtcFactory.properties
  * PtcFunction=<ClassNameImplementingPtcFunctino>
  * @see PtcFunction
  */
 public class PtcServer {
-	private static Log LOG = new Log(PtcServer.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PtcServer.class);
 
 	/**
 	 * @param args

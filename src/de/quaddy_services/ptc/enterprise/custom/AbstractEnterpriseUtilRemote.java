@@ -19,13 +19,14 @@ import de.quaddy_services.ptc.DisplayHelper;
 import de.quaddy_services.ptc.MainController;
 import de.quaddy_services.ptc.MainModel;
 import de.quaddy_services.ptc.enterprise.EnterpriseUtilRemote;
-import de.quaddy_services.ptc.log.Log;
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.report.TaskReport;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupByList;
 
 public abstract class AbstractEnterpriseUtilRemote implements EnterpriseUtilRemote {
-	private Log LOG = new Log(AbstractEnterpriseUtilRemote.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractEnterpriseUtilRemote.class);
 	private List<String> fixedTaskNames;
 	private MainModel model;
 	private String serverName;
@@ -57,15 +58,15 @@ public abstract class AbstractEnterpriseUtilRemote implements EnterpriseUtilRemo
 			}
 		};
 	}
+
 	private void createReport(final MainController aController, final long aFrom, final long aTo) {
 		try {
-			TaskReport tempTaskReport = new TaskReport(aController.getTaskHistory(), aController.getFrame(), model
-					.getTaskDelimiter(), model.getDontSumChar(), getFixedTaskNames());
+			TaskReport tempTaskReport = new TaskReport(aController.getTaskHistory(), aController.getFrame(), model.getTaskDelimiter(), model.getDontSumChar(),
+					getFixedTaskNames());
 			tempTaskReport.setPrettyFormat(false);
 			tempTaskReport.setIgnoreDontSumTasks(true);
 			StringBuilder tempReport = new StringBuilder();
-			tempTaskReport.createReport(tempReport, aFrom, aTo, GroupByList.getGroupBy(GroupByList.DAY),
-					TimeFormatList.MILLIS);
+			tempTaskReport.createReport(tempReport, aFrom, aTo, GroupByList.getGroupBy(GroupByList.DAY), TimeFormatList.MILLIS);
 
 			LOG.info(tempReport.toString());
 
@@ -136,8 +137,7 @@ public abstract class AbstractEnterpriseUtilRemote implements EnterpriseUtilRemo
 			AbstractDocument tempAbstractDocument = (AbstractDocument) tempDocument;
 			tempAbstractDocument.setDocumentFilter(new DocumentFilter() {
 				@Override
-				public void insertString(FilterBypass aFb, int aOffset, String aString, AttributeSet aAttr)
-						throws BadLocationException {
+				public void insertString(FilterBypass aFb, int aOffset, String aString, AttributeSet aAttr) throws BadLocationException {
 					int tempReadOnlyPos = getReadOnlyPos(tempEditor);
 					if (tempReadOnlyPos > 0 && aOffset < tempReadOnlyPos) {
 						LOG.info("Do not insert '" + aString + "' because it is fixed area");
@@ -169,8 +169,7 @@ public abstract class AbstractEnterpriseUtilRemote implements EnterpriseUtilRemo
 						if (aLength <= tempCurrentText.length()) {
 							String tempNewText = tempCurrentText.substring(aLength);
 							if (!isValidTask(tempNewText)) {
-								LOG.info("Do not remove " + aLength + " chars because '" + tempNewText
-										+ "' is not a valid task.");
+								LOG.info("Do not remove " + aLength + " chars because '" + tempNewText + "' is not a valid task.");
 								return;
 							}
 						}
@@ -179,8 +178,7 @@ public abstract class AbstractEnterpriseUtilRemote implements EnterpriseUtilRemo
 				}
 
 				@Override
-				public void replace(FilterBypass aFb, int aOffset, int aLength, String aText, AttributeSet aAttrs)
-						throws BadLocationException {
+				public void replace(FilterBypass aFb, int aOffset, int aLength, String aText, AttributeSet aAttrs) throws BadLocationException {
 					if (aOffset == 0) {
 						if (!isValidTask(aText)) {
 							LOG.info("Do not replace '" + aText + "' because it is not a valid task");

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package de.quaddy_services.ptc;
 
@@ -33,15 +33,16 @@ import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.text.Document;
 
 import de.quaddy_services.ptc.enterprise.EnterpriseUtilRemote;
-import de.quaddy_services.ptc.log.Log;
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.ptc.menu.SpeedLinkMenuCreator;
 
 /**
  * @author Stefan Cordes
- * 
+ *
  */
 public class MainView extends JPanel {
-	private Log LOG = new Log(this.getClass());
+	private static final Logger LOG = LoggerFactory.getLogger(MainView.class);
 
 	private MainController controller;
 
@@ -56,7 +57,7 @@ public class MainView extends JPanel {
 	private MainModel model = null;
 
 	/**
-	 * 
+	 *
 	 */
 	public MainView() {
 		super();
@@ -65,7 +66,7 @@ public class MainView extends JPanel {
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 */
 	private void initialize() {
 		GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
@@ -78,10 +79,10 @@ public class MainView extends JPanel {
 		gridBagConstraints1.weighty = 1.0D;
 		gridBagConstraints1.fill = java.awt.GridBagConstraints.BOTH;
 		gridBagConstraints1.gridy = 1;
-		this.setLayout(new GridBagLayout());
+		setLayout(new GridBagLayout());
 		this.setSize(new java.awt.Dimension(204, 25));
 		this.add(getContentPanel(), gridBagConstraints1);
-		this.setBorder(BasicBorders.getInternalFrameBorder());
+		setBorder(BasicBorders.getInternalFrameBorder());
 		this.add(getMenuButton(), gridBagConstraints3);
 		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
 		gridBagConstraints4.gridx = 0;
@@ -97,7 +98,7 @@ public class MainView extends JPanel {
 
 	/**
 	 * This method initializes contentPanel
-	 * 
+	 *
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getContentPanel() {
@@ -134,7 +135,7 @@ public class MainView extends JPanel {
 
 	/**
 	 * This method initializes taskNameBox
-	 * 
+	 *
 	 * @return javax.swing.JComboBox
 	 */
 	private JComboBox getTaskNameBox() {
@@ -149,7 +150,7 @@ public class MainView extends JPanel {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private void initTaskNameBoxListeners() {
 		taskNameBox.addItemListener(new ItemListener() {
@@ -183,7 +184,7 @@ public class MainView extends JPanel {
 
 	/**
 	 * This method initializes exitButton
-	 * 
+	 *
 	 * @return javax.swing.JButton
 	 */
 	private JButton getMenuButton() {
@@ -205,7 +206,7 @@ public class MainView extends JPanel {
 
 	/**
 	 * This method initializes exitButton
-	 * 
+	 *
 	 * @return javax.swing.JButton
 	 */
 	private JButton getSpeedlinkButton() {
@@ -301,13 +302,13 @@ public class MainView extends JPanel {
 			String tempTaskName = (String) getTaskNameBox().getModel().getElementAt(i);
 			tempTaskNames.add(tempTaskName);
 		}
-		SpeedLinkMenuCreator tempSpeedLinkMenuCreator = new SpeedLinkMenuCreator(controller.getFixedTaskNames(), model
-				.getTaskDelimiter().getDelimiter(), new ActionListener() {
-			public void actionPerformed(ActionEvent aE) {
-				getTaskNameBox().setSelectedItem(aE.getActionCommand());
-				// getController().otherTaskName(aE.getActionCommand());
-			}
-		});
+		SpeedLinkMenuCreator tempSpeedLinkMenuCreator = new SpeedLinkMenuCreator(controller.getFixedTaskNames(), model.getTaskDelimiter().getDelimiter(),
+				new ActionListener() {
+					public void actionPerformed(ActionEvent aE) {
+						getTaskNameBox().setSelectedItem(aE.getActionCommand());
+						// getController().otherTaskName(aE.getActionCommand());
+					}
+				});
 		return tempSpeedLinkMenuCreator.createSpeedlinkMenu(tempTaskNames);
 	}
 

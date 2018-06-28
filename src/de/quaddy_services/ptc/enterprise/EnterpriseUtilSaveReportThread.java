@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package de.quaddy_services.ptc.enterprise;
 
@@ -7,16 +7,18 @@ import java.awt.EventQueue;
 
 import de.quaddy_services.ptc.DisplayHelper;
 import de.quaddy_services.ptc.MainController;
-import de.quaddy_services.ptc.log.Log;
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 
 class EnterpriseUtilSaveReportThread extends Thread {
+
+	private static final Logger LOG = LoggerFactory.getLogger(EnterpriseUtilSaveReportThread.class);
 	/**
-	 * 
+	 *
 	 */
 	private final String serverName;
 	private final StringBuilder tempReport;
 	private final MainController controller;
-	private final Log LOG = new Log(this.getClass());
 	private Object result;
 	private Runnable resultRunnable = new Runnable() {
 		// Ensure it's loader on sucessfull execution to show errors
@@ -25,8 +27,7 @@ class EnterpriseUtilSaveReportThread extends Thread {
 			if (result instanceof Throwable) {
 				DisplayHelper.displayException(controller.getFrame(), (Throwable) result);
 			} else {
-				DisplayHelper.displayText(controller.getFrame(), "Tasks saved.", "Tasks saved to booking system.\n"
-						+ result, true);
+				DisplayHelper.displayText(controller.getFrame(), "Tasks saved.", "Tasks saved to booking system.\n" + result, true);
 
 			}
 		};
@@ -47,7 +48,7 @@ class EnterpriseUtilSaveReportThread extends Thread {
 			final String tempInfo = tempRemote.saveReport(tempUserName, tempReport.toString());
 			result = tempInfo;
 		} catch (final Throwable e) {
-			LOG.exception(e);
+			LOG.error("Error", e);
 			result = e;
 		}
 		EventQueue.invokeLater(resultRunnable);

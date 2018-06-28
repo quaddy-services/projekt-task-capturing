@@ -6,10 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import de.quaddy_services.ptc.log.Log;
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 
 public class BackupFile {
-	private Log LOG = new Log(BackupFile.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BackupFile.class);
 
 	public void backupFile(File aFileName, int aMaxBackups) throws IOException {
 		if (aFileName.exists()) {

@@ -6,10 +6,11 @@ import javax.swing.Action;
 
 import de.quaddy_services.ptc.MainController;
 import de.quaddy_services.ptc.enterprise.custom.AbstractEnterpriseUtilRemote;
-import de.quaddy_services.ptc.log.Log;
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 
 public class EnterpriseUtilImpl extends AbstractEnterpriseUtilRemote {
-	private Log LOG = new Log(EnterpriseUtilImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EnterpriseUtilImpl.class);
 
 	public Action createShowBookingSystemAction(final MainController aController) {
 		return null;

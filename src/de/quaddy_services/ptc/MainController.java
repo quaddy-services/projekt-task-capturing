@@ -55,7 +55,8 @@ import javax.swing.plaf.basic.BasicBorders;
 import de.quaddy_services.ptc.edit.TaskEditor;
 import de.quaddy_services.ptc.enterprise.EnterpriseUtil;
 import de.quaddy_services.ptc.enterprise.EnterpriseUtilRemote;
-import de.quaddy_services.ptc.log.Log;
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.ptc.preferences.PreferencesSelection;
 import de.quaddy_services.ptc.store.BackupFile;
 import de.quaddy_services.ptc.store.FileUtil;
@@ -73,7 +74,7 @@ import de.quaddy_services.report.gui.ReportSelection;
  *
  */
 public class MainController {
-	private Log LOG = new Log(this.getClass());
+	private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
 	private MainModel model;
 
 	private JFrame frame;
@@ -100,7 +101,7 @@ public class MainController {
 			taskHistory.backupFile();
 			taskHistory.updateLastTask(TaskHistory.TASK_STARTED);
 			setMainViewModel();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			handleException(e);
 		}
 
@@ -165,7 +166,7 @@ public class MainController {
 		String tempServer = model.getEnterpriseServer();
 		try {
 			enterpriseUtil.initTaskNames(frame, model, tempServer);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			handleException(e);
 		}
 	}
@@ -239,7 +240,7 @@ public class MainController {
 				try {
 					LOG.info("windowClosing");
 					exitApplicationRequestedByUser();
-				} catch (Throwable e) {
+				} catch (Exception e) {
 					handleException(e);
 				}
 			}
@@ -354,7 +355,7 @@ public class MainController {
 					}
 				});
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			handleException(e);
 		}
 	}
@@ -492,7 +493,7 @@ public class MainController {
 				tempProperties.load(tempFileInputStream);
 				tempFileInputStream.close();
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			handleException(e);
 		}
 		tempMainModel.setProperties(tempProperties);
@@ -636,7 +637,7 @@ public class MainController {
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			handleException(e);
 		}
 	}
@@ -650,7 +651,7 @@ public class MainController {
 		return tempActions;
 	}
 
-	private void handleException(Throwable aE) {
+	private void handleException(Exception aE) {
 		LOG.exception(aE);
 		DisplayHelper.displayException(frame, aE);
 	}
@@ -675,7 +676,7 @@ public class MainController {
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			handleException(e);
 		}
 	}
@@ -694,7 +695,7 @@ public class MainController {
 				List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 				tempTaskReport.showReport(tempFrom, tempTo, tempReportSelection.getGroupBys(), tempReportSelection.getTimeFormat(), tempActions);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			handleException(e);
 		}
 	}
