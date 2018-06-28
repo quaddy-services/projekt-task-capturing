@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package de.quaddy_services.ptc;
 
@@ -13,6 +13,7 @@ import de.quaddy_services.ptc.preferences.DontSumCharList;
 import de.quaddy_services.ptc.preferences.Preferences;
 import de.quaddy_services.ptc.preferences.TaskDelimiter;
 import de.quaddy_services.ptc.preferences.TaskDelimiterList;
+import de.quaddy_services.ptc.store.FileUtil;
 import de.quaddy_services.report.format.TimeFormat;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupBy;
@@ -20,7 +21,7 @@ import de.quaddy_services.report.groupby.GroupByList;
 
 /**
  * @author Stefan Cordes
- * 
+ *
  */
 public class MainModel {
 	private static final String FRAME_BOUNDS = "frameBounds";
@@ -95,9 +96,8 @@ public class MainModel {
 		}
 		StringTokenizer tempNumbers = new StringTokenizer(aProperty, ",");
 		Rectangle tempRectangle = new Rectangle();
-		tempRectangle.setBounds(new Integer(tempNumbers.nextToken()).intValue(),
-				new Integer(tempNumbers.nextToken()).intValue(), new Integer(tempNumbers.nextToken()).intValue(),
-				new Integer(tempNumbers.nextToken()).intValue());
+		tempRectangle.setBounds(new Integer(tempNumbers.nextToken()).intValue(), new Integer(tempNumbers.nextToken()).intValue(),
+				new Integer(tempNumbers.nextToken()).intValue(), new Integer(tempNumbers.nextToken()).intValue());
 		return tempRectangle;
 	}
 
@@ -124,8 +124,7 @@ public class MainModel {
 	}
 
 	public TaskDelimiter getTaskDelimiter() {
-		TaskDelimiter tempTaskDelimiter = TaskDelimiterList.getTaskDelimiter(getProperties().getProperty(
-				Preferences.TASK_DELIMITER));
+		TaskDelimiter tempTaskDelimiter = TaskDelimiterList.getTaskDelimiter(getProperties().getProperty(Preferences.TASK_DELIMITER));
 		if (tempTaskDelimiter == null) {
 			tempTaskDelimiter = TaskDelimiterList.getDefault();
 			getProperties().setProperty(Preferences.TASK_DELIMITER, tempTaskDelimiter.getName());
@@ -134,8 +133,7 @@ public class MainModel {
 	}
 
 	public DontSumChar getDontSumChar() {
-		DontSumChar tempDontSumChar = DontSumCharList.getDontSumChar(getProperties().getProperty(
-				Preferences.DONT_SUM_DELIMITER));
+		DontSumChar tempDontSumChar = DontSumCharList.getDontSumChar(getProperties().getProperty(Preferences.DONT_SUM_DELIMITER));
 		if (tempDontSumChar == null) {
 			tempDontSumChar = DontSumCharList.getDefault();
 			getProperties().setProperty(Preferences.DONT_SUM_DELIMITER, tempDontSumChar.getName());
@@ -154,6 +152,14 @@ public class MainModel {
 
 	public String getEnterpriseServer() {
 		return getProperties().getProperty(Preferences.ENTERPRISE_SERVER, "");
+	}
+
+	public String getDataFolder() {
+		String tempDatafolders = getProperties().getProperty(Preferences.DATA_FOLDER);
+		if (tempDatafolders == null) {
+			tempDatafolders = FileUtil.getDefaultDataFolder();
+		}
+		return tempDatafolders;
 	}
 
 	public Short getReminderFlashOnMinute() {

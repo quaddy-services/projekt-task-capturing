@@ -222,6 +222,7 @@ public class PreferencesSelection extends JPanel {
 		tempProperties.setProperty(Preferences.ENTERPRISE_SERVER, enterpriseServer.getText());
 		tempProperties.setProperty(Preferences.ALWAYS_ON_TOP, "" + alwaysOnTop.isSelected());
 		tempProperties.setProperty(Preferences.REMINDER_FLASH_ON_MINUTE, reminderFlashOnMinute.getText());
+		tempProperties.setProperty(Preferences.DATA_FOLDER, dataFolder.getText());
 		return tempProperties;
 	}
 }

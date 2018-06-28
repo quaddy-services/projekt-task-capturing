@@ -498,6 +498,7 @@ public class MainController {
 		}
 		tempMainModel.setProperties(tempProperties);
 		model = tempMainModel;
+		FileUtil.setDataFolder(model.getDataFolder());
 	}
 
 	/**
@@ -706,6 +707,7 @@ public class MainController {
 		boolean tempOk = DisplayHelper.displayComponent(frame, "Select Preferences...", tempPreferencesSelection);
 		if (tempOk) {
 			model.getProperties().putAll(tempPreferencesSelection.getValues());
+			FileUtil.setDataFolder(model.getDataFolder());
 			saveModelNoException();
 			initEnterpriseServer();
 			try {
