@@ -7,16 +7,24 @@ public class FileUtil {
 
 	public static String getDataFolder() {
 		if (dataFolder == null) {
-			String tempFileName = System.getProperty("user.home");
-			tempFileName = tempFileName.replace('\\', '/');
-			if (!tempFileName.endsWith("/")) {
-				tempFileName += "/";
-			}
-			tempFileName += "ptc";
-			new File(tempFileName).mkdir();
+			String tempFileName = getDefaultDataFolder();
 			dataFolder = tempFileName;
 		}
 		return dataFolder;
+	}
+
+	/**
+	 *
+	 */
+	public static String getDefaultDataFolder() {
+		String tempFileName = System.getProperty("user.home");
+		tempFileName = tempFileName.replace('\\', '/');
+		if (!tempFileName.endsWith("/")) {
+			tempFileName += "/";
+		}
+		tempFileName += "ptc";
+		new File(tempFileName).mkdir();
+		return tempFileName;
 	}
 
 	public static void setDataFolder(String aDataFolder) {

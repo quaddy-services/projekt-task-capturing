@@ -503,7 +503,7 @@ public class MainController {
 	 * @return
 	 */
 	private File getStoreFile() {
-		return new File(FileUtil.getDataFolder() + "/ptc.properties");
+		return new File(FileUtil.getDefaultDataFolder() + "/ptc.properties");
 	}
 
 	public void toggleFrameDecorator() {
@@ -575,7 +575,7 @@ public class MainController {
 			LOG.info("Do not timerRepeats as shutdownPending");
 			return;
 		}
-		if (lastTimerRepeats + ONE_HOUR_IN_MILLIS  < System.currentTimeMillis()) {
+		if (lastTimerRepeats + ONE_HOUR_IN_MILLIS < System.currentTimeMillis()) {
 			BigDecimal tempHours = new BigDecimal(System.currentTimeMillis() - lastTimerRepeats).divide(new BigDecimal(ONE_HOUR_IN_MILLIS), 2,
 					RoundingMode.HALF_UP);
 			String tempActualTaskName = model.getCurrentTask();

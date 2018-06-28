@@ -11,14 +11,25 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
+import de.quaddy_services.ptc.store.FileUtil;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupByList;
 
 public class PreferencesSelection extends JPanel {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PreferencesSelection.class);
+
 	private JComboBox taskDelimiter = new JComboBox();
 	private JComboBox dontSumChar = new JComboBox();
 	private JComboBox groupBy = new JComboBox();
@@ -26,6 +37,8 @@ public class PreferencesSelection extends JPanel {
 	private JTextField enterpriseServer = new JTextField();
 	private JCheckBox alwaysOnTop = new JCheckBox();
 	private JTextField reminderFlashOnMinute = new JTextField();
+	private JTextField dataFolder = new JTextField();
+	private JButton dataFolderSelection = new JButton("...");
 
 	public PreferencesSelection() {
 		setOpaque(false);
@@ -47,8 +60,7 @@ public class PreferencesSelection extends JPanel {
 		add(taskDelimiter, createGrid(x, y));
 		x = 0;
 		y++;
-		add(new JLabel(" (On this delimiter char the report " + "will be breaked down (grouped) in reports)"),
-				createGrid(x, y, 2));
+		add(new JLabel(" (On this delimiter char the report " + "will be breaked down (grouped) in reports)"), createGrid(x, y, 2));
 
 		y++;
 		add(new JLabel(""), createGrid(x, y));
@@ -104,8 +116,22 @@ public class PreferencesSelection extends JPanel {
 		add(new JLabel("Reminderflash on Minute:"), createGrid(x, y));
 		x++;
 		add(reminderFlashOnMinute, createGrid(x, y));
-		reminderFlashOnMinute
-				.setToolTipText("Flash every hour on specified minute. Default=57. To disable clear field.");
+		reminderFlashOnMinute.setToolTipText("Flash every hour on specified minute. Default=57. To disable clear field.");
+
+		x = 0;
+		y++;
+		add(new JLabel("Datafolder:"), createGrid(x, y));
+		x++;
+		JPanel tempDataFolderPanel = createDataFolderPanel(dataFolder, dataFolderSelection);
+		add(tempDataFolderPanel, createGrid(x, y));
+
+		dataFolder.setToolTipText("Datafolder (change will NOT copy history)");
+		dataFolderSelection.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent aE) {
+				selectDataFolder();
+			}
+		});
 
 		x = 0;
 		y++;
@@ -122,6 +148,35 @@ public class PreferencesSelection extends JPanel {
 		add(tempRestore, createGrid(x, y));
 	}
 
+	/**
+	 *
+	 */
+	private JPanel createDataFolderPanel(JTextField aDataFolder, JButton aDataFolderSelection) {
+		JPanel tempJPanel = new JPanel();
+		tempJPanel.setLayout(new GridBagLayout());
+		GridBagConstraints tempGridText = createGrid(0, 0);
+		tempGridText.weightx = 1.0;
+		tempJPanel.add(aDataFolder, tempGridText);
+		GridBagConstraints tempGridButton = createGrid(1, 0);
+		tempGridButton.insets = new Insets(0, 0, 0, 0);
+		tempJPanel.add(aDataFolderSelection, tempGridButton);
+		return tempJPanel;
+	}
+
+	/**
+	 *
+	 */
+	protected void selectDataFolder() {
+		JFileChooser tempJFileChooser = new JFileChooser(dataFolder.getText());
+		tempJFileChooser.setDialogTitle("Change data folder (task history will be lost!)");
+		tempJFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		tempJFileChooser.setAcceptAllFileFilterUsed(false);
+		int tempResult = tempJFileChooser.showOpenDialog(this);
+		if (tempResult == JFileChooser.APPROVE_OPTION) {
+			dataFolder.setText(tempJFileChooser.getSelectedFile().getAbsolutePath());
+		}
+	}
+
 	private void restoreDefaults() {
 		taskDelimiter.setSelectedItem(TaskDelimiterList.DEFAULT);
 		dontSumChar.setSelectedItem(DontSumCharList.DEFAULT);
@@ -130,6 +185,7 @@ public class PreferencesSelection extends JPanel {
 		enterpriseServer.setText("");
 		alwaysOnTop.setSelected(false);
 		reminderFlashOnMinute.setText("57");
+		dataFolder.setText(FileUtil.getDefaultDataFolder());
 	}
 
 	private GridBagConstraints createGrid(int aI, int aY) {
@@ -152,9 +208,9 @@ public class PreferencesSelection extends JPanel {
 		timeFormat.setSelectedItem(aProperties.getProperty(Preferences.TIME_FORMAT, TimeFormatList.DEFAULT));
 		groupBy.setSelectedItem(aProperties.getProperty(Preferences.GROUP_BY, GroupByList.DEFAULT));
 		enterpriseServer.setText(aProperties.getProperty(Preferences.ENTERPRISE_SERVER, ""));
-		alwaysOnTop
-				.setSelected(Boolean.valueOf(aProperties.getProperty(Preferences.ALWAYS_ON_TOP, "" + Boolean.FALSE)));
+		alwaysOnTop.setSelected(Boolean.valueOf(aProperties.getProperty(Preferences.ALWAYS_ON_TOP, "" + Boolean.FALSE)));
 		reminderFlashOnMinute.setText(aProperties.getProperty(Preferences.REMINDER_FLASH_ON_MINUTE, "57"));
+		dataFolder.setText(aProperties.getProperty(Preferences.DATA_FOLDER, FileUtil.getDefaultDataFolder()));
 	}
 
 	public Properties getValues() {
