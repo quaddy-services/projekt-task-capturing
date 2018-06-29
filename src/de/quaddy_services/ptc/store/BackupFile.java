@@ -21,6 +21,8 @@ public class BackupFile {
 			File tempBackup = createBackupFile(aFileName, 0);
 			copyFile(aFileName, tempBackup);
 			LOG.info("Backuped to " + tempBackup.getAbsolutePath());
+		} else {
+			LOG.info("Do not Backuped as " + aFileName.getAbsolutePath() + " does not exists.");
 		}
 	}
 

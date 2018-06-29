@@ -60,6 +60,7 @@ import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.ptc.preferences.PreferencesSelection;
 import de.quaddy_services.ptc.store.BackupFile;
 import de.quaddy_services.ptc.store.FileUtil;
+import de.quaddy_services.ptc.store.NetworkDriveNotAvailable;
 import de.quaddy_services.ptc.store.PosAndContent;
 import de.quaddy_services.ptc.store.Task;
 import de.quaddy_services.ptc.store.TaskHistory;
@@ -95,17 +96,35 @@ public class MainController {
 		mainView = new MainView();
 		mainView.setController(this);
 
+		initFrame("PTC", mainView);
+
+		init2();
+	}
+
+	public void init2() {
 		initEnterpriseServer();
 
 		try {
 			taskHistory.backupFile();
 			taskHistory.updateLastTask(TaskHistory.TASK_STARTED);
 			setMainViewModel();
+			fireNetworkDriveOk();
+		} catch (NetworkDriveNotAvailable e) {
+			LOG.error("Ignore " + e);
+			LOG.debug("Ignore", e);
+			fireNetworkDriveNotAvailable(e);
 		} catch (Exception e) {
 			handleException(e);
+			Timer tempRetryTimer = new Timer(20000, new ActionListener() {
+				@Override
+				public void actionPerformed(@SuppressWarnings("unused") ActionEvent aE) {
+					LOG.info("Retry init2()");
+					init2();
+				}
+			});
+			tempRetryTimer.start();
 		}
 
-		initFrame("PTC", mainView);
 		repeatingTimer = new Timer(10000, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent aE) {
@@ -296,6 +315,11 @@ public class MainController {
 			saveApplicationStateToModel(true);
 			saveModel();
 			taskHistory.updateLastTask(TaskHistory.TASK_CLOSED);
+			fireNetworkDriveOk();
+		} catch (NetworkDriveNotAvailable e) {
+			LOG.error("Ignore " + e);
+			LOG.debug("Ignore", e);
+			fireNetworkDriveNotAvailable(e);
 		} catch (Exception e) {
 			LOG.exception(e);
 		}
@@ -325,49 +349,58 @@ public class MainController {
 		Rectangle tempCurrentFrameBounds = tempFrame.getBounds();
 		Insets tempCurrentFrameInsets = tempBorder.getBorderInsets(tempFrame);
 		// Save the frame bounds.
-		if (tempCurrentLocationOnScreen != null) {
-			// Should always be != null
-			tempCurrentLocationOnScreen.x += tempCurrentFrameInsets.left;
-			tempCurrentLocationOnScreen.y += tempCurrentFrameInsets.top;
-			tempCurrentLocationOnScreen.width -= tempCurrentFrameInsets.right + tempCurrentFrameInsets.left;
-			tempCurrentLocationOnScreen.height -= tempCurrentFrameInsets.bottom + tempCurrentFrameInsets.top;
-			if (model.isFrameDecorated()) {
-				if (aLogInfo) {
-					LOG.info("isFrameDecorated Frame=" + tempCurrentFrameBounds + " " + tempCurrentLocationOnScreen);
-				}
-				model.setFrameBounds(getFrame().getBounds());
-				model.setFrameContentBounds(tempCurrentLocationOnScreen);
-			} else {
-				if (aLogInfo) {
-					LOG.info("not isFrameDecorated " + tempCurrentLocationOnScreen);
-				}
-				// see initFrame
-				model.setFrameContentBounds(tempCurrentLocationOnScreen);
+		tempCurrentLocationOnScreen.x += tempCurrentFrameInsets.left;
+		tempCurrentLocationOnScreen.y += tempCurrentFrameInsets.top;
+		tempCurrentLocationOnScreen.width -= tempCurrentFrameInsets.right + tempCurrentFrameInsets.left;
+		tempCurrentLocationOnScreen.height -= tempCurrentFrameInsets.bottom + tempCurrentFrameInsets.top;
+		if (model.isFrameDecorated()) {
+			if (aLogInfo) {
+				LOG.info("isFrameDecorated Frame=" + tempCurrentFrameBounds + " " + tempCurrentLocationOnScreen);
 			}
+			model.setFrameBounds(getFrame().getBounds());
+			model.setFrameContentBounds(tempCurrentLocationOnScreen);
+		} else {
+			if (aLogInfo) {
+				LOG.info("not isFrameDecorated " + tempCurrentLocationOnScreen);
+			}
+			// see initFrame
+			model.setFrameContentBounds(tempCurrentLocationOnScreen);
 		}
 	}
 
 	public void saveModelNoException() {
 		try {
 			final Task tempCurrentTask = saveModel();
-			if (EventQueue.isDispatchThread()) {
-				updateFrame(tempCurrentTask);
-			} else {
-				EventQueue.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						updateFrame(tempCurrentTask);
-					}
-				});
-			}
+			updateFrame(tempCurrentTask);
+			fireNetworkDriveOk();
+		} catch (NetworkDriveNotAvailable e) {
+			LOG.error("Ignore " + e);
+			LOG.debug("Ignore", e);
+			fireNetworkDriveNotAvailable(e);
 		} catch (Exception e) {
 			handleException(e);
 		}
 	}
 
+	/**
+	 *
+	 */
+	private void fireNetworkDriveOk() {
+		frame.setAlwaysOnTop(model.isAlwaysOnTop());
+	}
+
+	/**
+	 *
+	 */
+	private void fireNetworkDriveNotAvailable(NetworkDriveNotAvailable aE) {
+		frame.setTitle("! " + aE.getMessage() + " !");
+		frame.setAlwaysOnTop(true);
+		reminderFlashNow();
+	}
+
 	private Properties lastProperties;
 
-	private Task saveModel() throws MalformedURLException, FileNotFoundException, IOException {
+	private Task saveModel() throws MalformedURLException, FileNotFoundException, IOException, NetworkDriveNotAvailable {
 		File tempFile = getStoreFile();
 
 		Properties tempProperties = model.getProperties();
@@ -378,7 +411,9 @@ public class MainController {
 		}
 
 		String tempActualTaskName = model.getCurrentTask();
-		Task tempCurrentTask = currentTaskUpdater.updateLastTask(tempActualTaskName);
+		Task tempCurrentTask;
+		tempCurrentTask = currentTaskUpdater.updateLastTask(tempActualTaskName);
+
 		return tempCurrentTask;
 	}
 

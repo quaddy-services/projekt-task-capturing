@@ -48,9 +48,10 @@ public class TaskHistory implements TaskUpdater {
 	 * @param aTaskName
 	 * @return
 	 * @throws IOException
+	 * @throws NetworkDriveNotAvailable
 	 */
 	@Override
-	public synchronized Task updateLastTask(String aTaskName) throws IOException {
+	public synchronized Task updateLastTask(String aTaskName) throws IOException, NetworkDriveNotAvailable {
 		Date tempNow = new Date();
 		Task tempTask = new Task(aTaskName, tempNow, tempNow);
 		if (aTaskName == null) {
@@ -60,8 +61,20 @@ public class TaskHistory implements TaskUpdater {
 		long tempStopTime = tempStartTime;
 		File tempFile = getActualFile();
 		if (!tempFile.exists()) {
-			// Create the file.
-			tempFile.createNewFile();
+			try {
+				// Create the file.
+				tempFile.createNewFile();
+			} catch (IOException e) {
+				LOGGER.error("Error creating " + tempFile.getAbsolutePath() + ":" + e);
+				// maybe network drive is not available
+				if (!tempFile.getParentFile().exists()) {
+					LOGGER.info("Looks like it is an NetworkDrive");
+					throw new NetworkDriveNotAvailable(tempFile.getAbsolutePath(), e);
+				} else {
+					throw e;
+				}
+
+			}
 		}
 		RandomAccessFile tempContent = new RandomAccessFile(tempFile, "rw");
 		long tempSize = tempContent.length();
