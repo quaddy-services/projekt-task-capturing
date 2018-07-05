@@ -66,6 +66,7 @@ public class TaskHistory implements TaskUpdater {
 				tempFile.createNewFile();
 			} catch (IOException e) {
 				LOGGER.error("Error creating " + tempFile.getAbsolutePath() + ":" + e);
+				LOGGER.debug("Details", e);
 				// maybe network drive is not available
 				if (!tempFile.getParentFile().exists()) {
 					LOGGER.info("Looks like it is an NetworkDrive");
@@ -76,7 +77,20 @@ public class TaskHistory implements TaskUpdater {
 
 			}
 		}
-		RandomAccessFile tempContent = new RandomAccessFile(tempFile, "rw");
+		RandomAccessFile tempContent;
+		try {
+			tempContent = new RandomAccessFile(tempFile, "rw");
+		} catch (FileNotFoundException e) {
+			//			java.io.FileNotFoundException: h:\ptc\ptc.tasks.txt (Der angegebene Netzwerkname ist nicht mehr verfügbar)
+			//			at java.io.RandomAccessFile.open0(Native Method)
+			//			at java.io.RandomAccessFile.open(RandomAccessFile.java:316)
+			//			at java.io.RandomAccessFile.<init>(RandomAccessFile.java:243)
+			//			at de.quaddy_services.ptc.store.TaskHistory.updateLastTask(TaskHistory.java:79)
+			LOGGER.error("Error opening " + tempFile.getAbsolutePath() + ":" + e);
+			LOGGER.debug("Details", e);
+			throw new NetworkDriveNotAvailable(tempFile.getAbsolutePath(), e);
+
+		}
 		long tempSize = tempContent.length();
 		if (tempSize == 0) {
 			tempTask.setStart(tempStartTime);
