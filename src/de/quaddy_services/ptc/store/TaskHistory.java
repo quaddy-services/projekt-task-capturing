@@ -91,53 +91,60 @@ public class TaskHistory implements TaskUpdater {
 			throw new NetworkDriveNotAvailable(tempFile.getAbsolutePath(), e);
 
 		}
-		long tempSize = tempContent.length();
-		if (tempSize == 0) {
-			tempTask.setStart(tempStartTime);
-			tempTask.setStop(tempStopTime);
-			tempContent.write(format(tempTask));
-		} else {
-			// Find last line
-			PosAndContent<String> tempLastLine = findLastLine(tempContent, 200);
-			StringTokenizer tempTokens = new StringTokenizer(tempLastLine.getLine(), "\t");
-			byte[] tempNewLine;
-			if (tempTokens.countTokens() != 3) {
+		try {
+			long tempSize = tempContent.length();
+			if (tempSize == 0) {
 				tempTask.setStart(tempStartTime);
 				tempTask.setStop(tempStopTime);
-				tempNewLine = format(tempTask);
+				tempContent.write(format(tempTask));
 			} else {
-				String tempLastTask = tempTokens.nextToken();
-				long tempLastStart = tempStartTime;
-				long tempLastStop = tempStopTime;
-				if (isInternalTask(tempLastTask)) {
-					// First time updateLastTask is called
-					tempLastStop = CLASS_LOADING_TIME;
+				// Find last line
+				PosAndContent<String> tempLastLine = findLastLine(tempContent, 200);
+				StringTokenizer tempTokens = new StringTokenizer(tempLastLine.getLine(), "\t");
+				byte[] tempNewLine;
+				if (tempTokens.countTokens() != 3) {
+					tempTask.setStart(tempStartTime);
+					tempTask.setStop(tempStopTime);
+					tempNewLine = format(tempTask);
 				} else {
-					try {
-						tempLastStart = DATE_FORMAT.parse(tempTokens.nextToken()).getTime();
-						tempLastStop = DATE_FORMAT.parse(tempTokens.nextToken()).getTime();
-					} catch (ParseException e) {
-						e.printStackTrace();
+					String tempLastTask = tempTokens.nextToken();
+					long tempLastStart = tempStartTime;
+					long tempLastStop = tempStopTime;
+					if (isInternalTask(tempLastTask)) {
+						// First time updateLastTask is called
+						tempLastStop = CLASS_LOADING_TIME;
+					} else {
+						try {
+							tempLastStart = DATE_FORMAT.parse(tempTokens.nextToken()).getTime();
+							tempLastStop = DATE_FORMAT.parse(tempTokens.nextToken()).getTime();
+						} catch (ParseException e) {
+							LOGGER.error("Ignore " + tempLastLine, e);
+							// new task
+							tempLastTask = null;
+						}
+					}
+					if (tempLastTask != null && tempLastTask.equals(aTaskName)) {
+						// Same task, set eof to old string position.
+						tempContent.setLength(tempLastLine.getPosInFile());
+						tempTask.setStart(tempLastStart);
+						tempTask.setStop(tempStopTime);
+						tempNewLine = format(tempTask);
+					} else {
 						// new task
-						tempLastTask = null;
+						tempTask.setStart(tempLastStop);
+						tempTask.setStop(tempStopTime);
+						tempNewLine = format(tempTask);
 					}
 				}
-				if (tempLastTask != null && tempLastTask.equals(aTaskName)) {
-					// Same task, set eof to old string position.
-					tempContent.setLength(tempLastLine.getPosInFile());
-					tempTask.setStart(tempLastStart);
-					tempTask.setStop(tempStopTime);
-					tempNewLine = format(tempTask);
-				} else {
-					// new task
-					tempTask.setStart(tempLastStop);
-					tempTask.setStop(tempStopTime);
-					tempNewLine = format(tempTask);
-				}
+				tempContent.write(tempNewLine);
 			}
-			tempContent.write(tempNewLine);
+		} finally {
+			try {
+				tempContent.close();
+			} catch (IOException e) {
+				LOGGER.error("Ignore closing", e);
+			}
 		}
-		tempContent.close();
 		return tempTask;
 	}
 
