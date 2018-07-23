@@ -146,6 +146,10 @@ public class MainController {
 	}
 
 	private int lastReminderFlash = -1;
+	/**
+	 * remind once only.
+	 */
+	private boolean networkDriveNotAvailableReported = false;
 
 	protected void reminderFlash() {
 		Short tempReminderFlashOnMinute = model.getReminderFlashOnMinute();
@@ -386,6 +390,7 @@ public class MainController {
 	 *
 	 */
 	private void fireNetworkDriveOk() {
+		networkDriveNotAvailableReported = false;
 		frame.setAlwaysOnTop(model.isAlwaysOnTop());
 	}
 
@@ -394,8 +399,11 @@ public class MainController {
 	 */
 	private void fireNetworkDriveNotAvailable(NetworkDriveNotAvailable aE) {
 		frame.setTitle("! " + aE.getMessage() + " !");
-		frame.setAlwaysOnTop(true);
-		reminderFlashNow();
+		if (!networkDriveNotAvailableReported) {
+			networkDriveNotAvailableReported = true;
+			frame.setAlwaysOnTop(true);
+			reminderFlashNow();
+		}
 	}
 
 	private Properties lastProperties;
