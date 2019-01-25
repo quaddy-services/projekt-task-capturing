@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.JFrame;
@@ -16,6 +16,8 @@ import de.quaddy_services.ptc.preferences.DontSumChar;
 import de.quaddy_services.ptc.preferences.TaskDelimiter;
 import de.quaddy_services.ptc.store.Task;
 import de.quaddy_services.ptc.store.TaskHistory;
+import de.quaddy_services.report.format.ReportType;
+import de.quaddy_services.report.format.ReportTypeList;
 import de.quaddy_services.report.format.TimeFormat;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupBy;
@@ -29,9 +31,9 @@ public class TaskReport {
 	private List<String> fixedTaskNames;
 	private boolean prettyFormat = true;
 	private boolean ignoreDontSumTasks = false;
+	private ReportType reportType;
 
-	public TaskReport(TaskHistory aTaksHistory, JFrame aFrame, TaskDelimiter aTaskDelimiter, DontSumChar aDontSumChar,
-			List<String> aFixedTaskNames) {
+	public TaskReport(TaskHistory aTaksHistory, JFrame aFrame, TaskDelimiter aTaskDelimiter, DontSumChar aDontSumChar, List<String> aFixedTaskNames) {
 		taskHistory = aTaksHistory;
 		frame = aFrame;
 		taskDelimiter = aTaskDelimiter;
@@ -39,10 +41,9 @@ public class TaskReport {
 		fixedTaskNames = aFixedTaskNames;
 	}
 
-	private static final String CR = "\r\n";
+	private static final String CR = System.lineSeparator();
 
-	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions)
-			throws IOException {
+	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions) throws IOException {
 		StringBuilder tempReport = new StringBuilder();
 		for (int i = 0; i < aGroupBy.length; i++) {
 			GroupBy tempGroupBy = aGroupBy[i];
@@ -65,10 +66,8 @@ public class TaskReport {
 		}
 	}
 
-	public void createReport(StringBuilder aReport, long aFrom, long aTo, GroupBy aGroupBy, TimeFormat aTimeFormat)
-			throws IOException {
-		aReport.append(DateFormat.getDateTimeInstance().format(aFrom) + " - "
-				+ DateFormat.getDateTimeInstance().format(aTo));
+	public void createReport(StringBuilder aReport, long aFrom, long aTo, GroupBy aGroupBy, TimeFormat aTimeFormat) throws IOException {
+		aReport.append(DateFormat.getDateTimeInstance().format(aFrom) + " - " + DateFormat.getDateTimeInstance().format(aTo));
 		aReport.append(" Format: ");
 		aReport.append(aTimeFormat.getName());
 		aReport.append(CR);
@@ -81,26 +80,77 @@ public class TaskReport {
 				}
 			}
 		}
-		Collections.sort(tempTasks, aGroupBy);
-		String tempOldGroupName = "";
-		List<Task> tempGroupTasks = new ArrayList<Task>();
-		for (Iterator<Task> i = tempTasks.iterator(); i.hasNext();) {
-			Task tempTask = i.next();
-			if (isIgnoreDontSumTasks()) {
-				if (tempTask.getName().startsWith(dontSumChar.getChar())) {
-					continue;
+		ReportType tempReportType = getReportType();
+		if (tempReportType == null || ReportTypeList.DEFAULT.equals(tempReportType)) {
+			Collections.sort(tempTasks, aGroupBy);
+			String tempOldGroupName = "";
+			List<Task> tempGroupTasks = new ArrayList<Task>();
+			for (Iterator<Task> i = tempTasks.iterator(); i.hasNext();) {
+				Task tempTask = i.next();
+				if (isIgnoreDontSumTasks()) {
+					if (tempTask.getName().startsWith(dontSumChar.getChar())) {
+						continue;
+					}
 				}
+				String tempGroupName = aGroupBy.getGroupName(tempTask);
+				if (!tempGroupName.equals(tempOldGroupName)) {
+					// New Group
+					formatGroup(aReport, tempGroupTasks, aGroupBy, aTimeFormat);
+					tempGroupTasks.clear();
+					tempOldGroupName = tempGroupName;
+				}
+				tempGroupTasks.add(tempTask);
 			}
-			String tempGroupName = aGroupBy.getGroupName(tempTask);
-			if (!tempGroupName.equals(tempOldGroupName)) {
-				// New Group
-				formatGroup(aReport, tempGroupTasks, aGroupBy, aTimeFormat);
-				tempGroupTasks.clear();
-				tempOldGroupName = tempGroupName;
-			}
-			tempGroupTasks.add(tempTask);
+			formatGroup(aReport, tempGroupTasks, aGroupBy, aTimeFormat);
+		} else if (tempReportType.equals(ReportTypeList.WORKING_TIMES)) {
+			formatWorkingTimes(aReport, tempTasks);
+		} else {
+			throw new IllegalArgumentException("Invalid report: " + tempReportType);
 		}
-		formatGroup(aReport, tempGroupTasks, aGroupBy, aTimeFormat);
+	}
+
+	/**
+	 *
+	 */
+	private void formatWorkingTimes(StringBuilder aReport, List<Task> aTasks) {
+		Collections.sort(aTasks, new Comparator<Task>() {
+			@Override
+			public int compare(Task aO1, Task aO2) {
+				return aO1.getStart().compareTo(aO2.getStart());
+			}
+		});
+		DateFormat tempDateFormat = DateFormat.getDateInstance(DateFormat.SHORT);
+		DateFormat tempTimeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+		String tempCurrentDay = null;
+		String tempStopTime = null;
+		boolean tempAddNextWorkingTime = false;
+		for (Task tempTask : aTasks) {
+			String tempDay = tempDateFormat.format(tempTask.getStart());
+			String tempTime = tempTimeFormat.format(tempTask.getStart());
+			if (tempTask.getName().startsWith(dontSumChar.getChar())) {
+				// user made a break
+				if (tempStopTime != null) {
+					aReport.append(" - " + tempStopTime);
+					tempStopTime = null;
+				}
+				tempAddNextWorkingTime = true;
+			} else if (tempAddNextWorkingTime) {
+				aReport.append(" " + tempTime);
+				tempStopTime = tempTimeFormat.format(tempTask.getStop());
+				tempAddNextWorkingTime = false;
+			}
+			if (tempCurrentDay == null || !tempCurrentDay.equals(tempDay)) {
+				if (tempCurrentDay != null) {
+					if (tempStopTime != null) {
+						aReport.append(" - " + tempStopTime);
+					}
+					aReport.append(CR);
+				}
+				tempCurrentDay = tempDay;
+				aReport.append(tempDay + ": " + tempTime);
+			}
+			tempStopTime = tempTimeFormat.format(tempTask.getStop());
+		}
 	}
 
 	private void formatGroup(StringBuilder aReport, List<Task> aGroupTasks, GroupBy aGroupBy, TimeFormat aTimeFormat) {
@@ -235,7 +285,7 @@ public class TaskReport {
 
 	/**
 	 * Returns the value of the instance variable 'prettyFormat'.
-	 * 
+	 *
 	 * @return Returns the prettyFormat.
 	 */
 	public boolean isPrettyFormat() {
@@ -244,7 +294,7 @@ public class TaskReport {
 
 	/**
 	 * Sets the instance variable 'prettyFormat'.
-	 * 
+	 *
 	 * @param aPrettyFormat
 	 *            The prettyFormat to set.
 	 */
@@ -254,7 +304,7 @@ public class TaskReport {
 
 	/**
 	 * Returns the value of the instance variable 'ignoreDontSumTasks'.
-	 * 
+	 *
 	 * @return Returns the ignoreDontSumTasks.
 	 */
 	public boolean isIgnoreDontSumTasks() {
@@ -263,11 +313,25 @@ public class TaskReport {
 
 	/**
 	 * Sets the instance variable 'ignoreDontSumTasks'.
-	 * 
+	 *
 	 * @param aIgnoreDontSumTasks
 	 *            The ignoreDontSumTasks to set.
 	 */
 	public void setIgnoreDontSumTasks(boolean aIgnoreDontSumTasks) {
 		ignoreDontSumTasks = aIgnoreDontSumTasks;
+	}
+
+	/**
+	 * @see #reportType
+	 */
+	public ReportType getReportType() {
+		return reportType;
+	}
+
+	/**
+	 * @see #reportType
+	 */
+	public void setReportType(ReportType aReportType) {
+		reportType = aReportType;
 	}
 }

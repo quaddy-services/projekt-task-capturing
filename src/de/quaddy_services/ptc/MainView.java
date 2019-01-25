@@ -264,6 +264,12 @@ public class MainView extends JPanel {
 				tempController.showLastWeek();
 			}
 		});
+		tempMenu.add(new AbstractAction("Show working times") {
+			@Override
+			public void actionPerformed(ActionEvent aE) {
+				tempController.showWorkingTimes();
+			}
+		});
 		tempMenu.add(new AbstractAction("Custom report...") {
 			@Override
 			public void actionPerformed(ActionEvent aE) {
