@@ -3,6 +3,8 @@ package de.quaddy_services.report.gui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -12,6 +14,8 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import de.quaddy_services.report.format.ReportType;
+import de.quaddy_services.report.format.ReportTypeList;
 import de.quaddy_services.report.format.TimeFormat;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupBy;
@@ -20,6 +24,7 @@ import de.quaddy_services.report.groupby.GroupByList;
 public class ReportSelection extends JPanel {
 	private JFormattedTextField from = new JFormattedTextField();
 	private JFormattedTextField to = new JFormattedTextField();
+	private JComboBox reportType = new JComboBox();
 	private JComboBox groupby1 = new JComboBox();
 	private JComboBox groupby2 = new JComboBox();
 	private JComboBox timeformat = new JComboBox();
@@ -42,24 +47,47 @@ public class ReportSelection extends JPanel {
 		x = 0;
 		y++;
 
-		timeformat.setModel(new DefaultComboBoxModel(TimeFormatList
-				.getTimeFormatNames().toArray()));
+		reportType.setModel(new DefaultComboBoxModel(ReportTypeList.getReportTypetNames().toArray()));
+		add(new JLabel("Report Type:"), createGrid(x, y));
+		x++;
+		add(reportType, createGrid(x, y));
+		x = 0;
+		y++;
+		reportType.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent aE) {
+				ReportType tempSelectedReportType = getReportType();
+				if (ReportTypeList.DEFAULT.equals(tempSelectedReportType)) {
+					groupby1.setEnabled(true);
+					groupby2.setEnabled(true);
+					timeformat.setEnabled(true);
+				} else {
+					groupby1.setEnabled(false);
+					groupby2.setEnabled(false);
+					timeformat.setEnabled(false);
+				}
+			}
+		});
+
+		add(new JLabel(""), createGrid(x, y));
+		y++;
+
+		timeformat.setModel(new DefaultComboBoxModel(TimeFormatList.getTimeFormatNames().toArray()));
 		add(new JLabel("Time format:"), createGrid(x, y));
 		x++;
 		add(timeformat, createGrid(x, y));
 		x = 0;
 		y++;
 
-		groupby1.setModel(new DefaultComboBoxModel(GroupByList
-				.getGroupByNames().toArray()));
+		groupby1.setModel(new DefaultComboBoxModel(GroupByList.getGroupByNames().toArray()));
 		add(new JLabel("GroupBy 1:"), createGrid(x, y));
 		x++;
 		add(groupby1, createGrid(x, y));
 		x = 0;
 		y++;
 
-		groupby2.setModel(new DefaultComboBoxModel(GroupByList
-				.getGroupByNames().toArray()));
+		groupby2.setModel(new DefaultComboBoxModel(GroupByList.getGroupByNames().toArray()));
 		add(new JLabel("GroupBy 2:"), createGrid(x, y));
 		x++;
 		add(groupby2, createGrid(x, y));
@@ -96,8 +124,11 @@ public class ReportSelection extends JPanel {
 	}
 
 	public TimeFormat getTimeFormat() {
-		return TimeFormatList.getTimeFormat(timeformat.getSelectedItem()
-				.toString());
+		return TimeFormatList.getTimeFormat(timeformat.getSelectedItem().toString());
+	}
+
+	public ReportType getReportType() {
+		return ReportTypeList.getReportType(reportType.getSelectedItem().toString());
 	}
 
 	public long getFrom() {
@@ -126,11 +157,16 @@ public class ReportSelection extends JPanel {
 		}
 		return new GroupBy[] { getGroupBy1(), getGroupBy2() };
 	}
-	
+
 	public void setGroupBy(GroupBy aGroupBy) {
 		groupby1.setSelectedItem(aGroupBy.getName());
 	}
+
 	public void setTimeFormat(TimeFormat aTimeFormat) {
 		timeformat.setSelectedItem(aTimeFormat.getName());
+	}
+
+	public void setReportType(ReportType aReportType) {
+		reportType.setSelectedItem(aReportType.getName());
 	}
 }

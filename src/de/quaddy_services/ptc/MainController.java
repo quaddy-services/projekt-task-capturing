@@ -66,6 +66,8 @@ import de.quaddy_services.ptc.store.Task;
 import de.quaddy_services.ptc.store.TaskHistory;
 import de.quaddy_services.ptc.store.TaskUpdater;
 import de.quaddy_services.report.TaskReport;
+import de.quaddy_services.report.format.ReportType;
+import de.quaddy_services.report.format.ReportTypeList;
 import de.quaddy_services.report.groupby.GroupBy;
 import de.quaddy_services.report.groupby.GroupByList;
 import de.quaddy_services.report.gui.ReportSelection;
@@ -731,11 +733,33 @@ public class MainController {
 		}
 	}
 
+	public void showWorkingTimes() {
+		try {
+			Calendar tempCal = Calendar.getInstance();
+			tempCal.set(Calendar.DAY_OF_YEAR, -30);
+			tempCal.set(Calendar.HOUR_OF_DAY, 0);
+			tempCal.set(Calendar.MINUTE, 0);
+			tempCal.set(Calendar.SECOND, 0);
+			tempCal.set(Calendar.MILLISECOND, 0);
+			long tempFrom = tempCal.getTimeInMillis();
+			long tempTo = System.currentTimeMillis();
+			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
+					enterpriseUtil.getFixedTaskNames());
+			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getDefault() };
+			tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
+			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
+			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
+		} catch (Exception e) {
+			handleException(e);
+		}
+	}
+
 	public void showCustomReport() {
 		try {
 			ReportSelection tempReportSelection = new ReportSelection();
 			tempReportSelection.setGroupBy(model.getGroupBy());
 			tempReportSelection.setTimeFormat(model.getTimeFormat());
+			tempReportSelection.setReportType(ReportTypeList.DEFAULT);
 			boolean tempOk = DisplayHelper.displayComponent(frame, "Select Report...", tempReportSelection);
 			if (tempOk) {
 				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
@@ -743,7 +767,15 @@ public class MainController {
 				long tempFrom = tempReportSelection.getFrom();
 				long tempTo = tempReportSelection.getTo();
 				List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
-				tempTaskReport.showReport(tempFrom, tempTo, tempReportSelection.getGroupBys(), tempReportSelection.getTimeFormat(), tempActions);
+				ReportType tempReportType = tempReportSelection.getReportType();
+				tempTaskReport.setReportType(tempReportType);
+				GroupBy[] tempGroupBys;
+				if (ReportTypeList.DEFAULT.equals(tempReportType)) {
+					tempGroupBys = tempReportSelection.getGroupBys();
+				} else {
+					tempGroupBys = new GroupBy[] { GroupByList.getDefault() };
+				}
+				tempTaskReport.showReport(tempFrom, tempTo, tempGroupBys, tempReportSelection.getTimeFormat(), tempActions);
 			}
 		} catch (Exception e) {
 			handleException(e);
