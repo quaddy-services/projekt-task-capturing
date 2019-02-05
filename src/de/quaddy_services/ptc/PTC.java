@@ -1,15 +1,13 @@
 /**
- * 
+ *
  */
 package de.quaddy_services.ptc;
 
 import java.awt.EventQueue;
 
-import javax.swing.UIManager;
-
 /**
  * @author Stefan Cordes
- * 
+ *
  */
 public class PTC {
 
@@ -30,11 +28,11 @@ public class PTC {
 		});
 	}
 
-
 	private static void mainEventQueue() throws Exception {
 		MainController tempMainController;
 
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		// Avoid font scaling problems in windows 10 #8
+		//		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
 		tempMainController = new MainController();
 
