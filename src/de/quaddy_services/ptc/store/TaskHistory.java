@@ -81,11 +81,13 @@ public class TaskHistory implements TaskUpdater {
 		try {
 			tempContent = new RandomAccessFile(tempFile, "rw");
 		} catch (FileNotFoundException e) {
-			//			java.io.FileNotFoundException: h:\ptc\ptc.tasks.txt (Der angegebene Netzwerkname ist nicht mehr verfügbar)
-			//			at java.io.RandomAccessFile.open0(Native Method)
-			//			at java.io.RandomAccessFile.open(RandomAccessFile.java:316)
-			//			at java.io.RandomAccessFile.<init>(RandomAccessFile.java:243)
-			//			at de.quaddy_services.ptc.store.TaskHistory.updateLastTask(TaskHistory.java:79)
+			// java.io.FileNotFoundException: h:\ptc\ptc.tasks.txt (Der angegebene
+			// Netzwerkname ist nicht mehr verfügbar)
+			// at java.io.RandomAccessFile.open0(Native Method)
+			// at java.io.RandomAccessFile.open(RandomAccessFile.java:316)
+			// at java.io.RandomAccessFile.<init>(RandomAccessFile.java:243)
+			// at
+			// de.quaddy_services.ptc.store.TaskHistory.updateLastTask(TaskHistory.java:79)
 			LOGGER.error("Error opening " + tempFile.getAbsolutePath() + ":" + e);
 			LOGGER.debug("Details", e);
 			throw new NetworkDriveNotAvailable(tempFile.getAbsolutePath(), e);
