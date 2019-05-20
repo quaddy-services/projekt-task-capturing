@@ -61,15 +61,12 @@ public class TaskReportTest extends TestCase {
 				+ "            00,65 SWD-Support-OMS CareInstructions\r\n" + "            00,14 SWD-Support-OMS MSC\r\n"
 				+ "            01,10 SWD-Support-OMS OMS-Errors\r\n" + "      01,89 SWD-Support-OMS\r\n"
 				+ "      01,30 SWD-other TISA\r\n" + "08,92 Sum\r\n" + "\r\n" + "-------------\r\n" + "";
-		if (!tempExpected.equals(tempReportString.toString())) {
-			StringTokenizer tempT1 = new StringTokenizer(tempExpected, "\r\n");
-			StringTokenizer tempT2 = new StringTokenizer(tempReportString.toString(), "\r\n");
-			while (tempT1.hasMoreTokens() && tempT2.hasMoreTokens()) {
-				String tempS1 = tempT1.nextToken();
-				String tempS2 = tempT2.nextToken();
-				assertEquals(tempS1, tempS2);
-			}
-			fail("Different result");
+		StringTokenizer tempT1 = new StringTokenizer(tempExpected, "\r\n");
+		StringTokenizer tempT2 = new StringTokenizer(tempReportString.toString(), "\r\n");
+		while (tempT1.hasMoreTokens() && tempT2.hasMoreTokens()) {
+			String tempS1 = tempT1.nextToken();
+			String tempS2 = tempT2.nextToken();
+			assertEquals(tempS1, tempS2);
 		}
 	}
 }
