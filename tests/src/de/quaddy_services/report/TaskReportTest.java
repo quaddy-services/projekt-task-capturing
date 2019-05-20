@@ -6,17 +6,18 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.swing.Action;
 
-import junit.framework.TestCase;
 import de.quaddy_services.ptc.preferences.DontSumCharList;
 import de.quaddy_services.ptc.preferences.TaskDelimiterList;
 import de.quaddy_services.ptc.store.TaskHistory;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupBy;
 import de.quaddy_services.report.groupby.GroupByList;
+import junit.framework.TestCase;
 
 public class TaskReportTest extends TestCase {
 
@@ -26,6 +27,7 @@ public class TaskReportTest extends TestCase {
 	 * @throws IOException
 	 */
 	public void testReportCreation() throws IOException, ParseException {
+		Locale.setDefault(Locale.GERMANY);
 		TaskHistory tempTaskHistory = new TaskHistory() {
 			@Override
 			protected Reader createReader() {
@@ -42,24 +44,23 @@ public class TaskReportTest extends TestCase {
 			}
 		};
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempReport = new TaskReport(tempTaskHistory, null, TaskDelimiterList.getDefault(), DontSumCharList
-				.getDefault(), null) {
+		TaskReport tempReport = new TaskReport(tempTaskHistory, null, TaskDelimiterList.getDefault(),
+				DontSumCharList.getDefault(), null) {
 			@Override
 			protected void displayText(String aTempReport, List<Action> aAnActions) {
 				tempReportString.append(aTempReport);
 			}
 		};
-		tempReport.showReport(new SimpleDateFormat("dd.MM.yyyy").parse("01.10.2007").getTime(), new SimpleDateFormat(
-				"dd.MM.yyyy").parse("02.10.2007").getTime(),
+		tempReport.showReport(new SimpleDateFormat("dd.MM.yyyy").parse("01.10.2007").getTime(),
+				new SimpleDateFormat("dd.MM.yyyy").parse("02.10.2007").getTime(),
 				new GroupBy[] { GroupByList.getGroupBy(GroupByList.NONE) }, TimeFormatList.getDefault(), null);
 		System.out.println(tempReportString);
-		String tempExpected = "01.10.2007 00:00:00 - 02.10.2007 00:00:00 Format: Hour\r\n" + "--- Total\r\n"
+		String tempExpected = "01.10.07 00:00 - 02.10.07 00:00 Format: Hour\r\n" + "--- Total\r\n"
 				+ "      00,79 SWD-CR-O4 DownloadSelection\r\n"
 				+ "            01,42 SWD-SV0036-O4-Upload ErrorQueue\r\n" + "      04,94 SWD-SV0036-O4-Upload\r\n"
-				+ "            00,65 SWD-Support-OMS CareInstructions\r\n"
-				+ "            00,14 SWD-Support-OMS MSC\r\n" + "            01,10 SWD-Support-OMS OMS-Errors\r\n"
-				+ "      01,89 SWD-Support-OMS\r\n" + "      01,30 SWD-other TISA\r\n" + "08,92 Sum\r\n" + "\r\n"
-				+ "-------------\r\n" + "";
+				+ "            00,65 SWD-Support-OMS CareInstructions\r\n" + "            00,14 SWD-Support-OMS MSC\r\n"
+				+ "            01,10 SWD-Support-OMS OMS-Errors\r\n" + "      01,89 SWD-Support-OMS\r\n"
+				+ "      01,30 SWD-other TISA\r\n" + "08,92 Sum\r\n" + "\r\n" + "-------------\r\n" + "";
 		if (!tempExpected.equals(tempReportString.toString())) {
 			StringTokenizer tempT1 = new StringTokenizer(tempExpected, "\r\n");
 			StringTokenizer tempT2 = new StringTokenizer(tempReportString.toString(), "\r\n");
