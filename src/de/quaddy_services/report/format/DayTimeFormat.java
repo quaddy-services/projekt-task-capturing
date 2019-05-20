@@ -32,7 +32,7 @@ public class DayTimeFormat implements TimeFormat {
 
 	@Override
 	public long roundToDisplay(long aTimeInMillis) {
-		int tempRounded = Math.round(aTimeInMillis / FACTOR) * FACTOR;
+		int tempRounded = ((int) Math.round(1.0 * aTimeInMillis / FACTOR)) * FACTOR;
 		return tempRounded;
 	}
 
