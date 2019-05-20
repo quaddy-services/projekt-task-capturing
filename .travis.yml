@@ -5,7 +5,7 @@ addons:
   sonarcloud:
     organization: "quaddy-services-github" # the key of the org you chose at step #3
     
-    # see SONAR_TOKEN property in https://travis-ci.com/quaddy-services/projekt-task-capturing/settings
+    # see SONAR_TOKEN property in https://travis-ci.org/quaddy-services/projekt-task-capturing/settings
     # token:
     #   secure: "*********" # encrypted value of your token
     
