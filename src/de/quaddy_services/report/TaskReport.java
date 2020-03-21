@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -121,43 +120,64 @@ public class TaskReport {
 	 *
 	 */
 	private void formatWorkingTimes(StringBuilder aReport, List<Task> aTasks) {
-		Collections.sort(aTasks, new Comparator<Task>() {
-			@Override
-			public int compare(Task aO1, Task aO2) {
-				return aO1.getStart().compareTo(aO2.getStart());
-			}
-		});
+
+		Collections.sort(aTasks, (aO1, aO2) -> aO1.getStart().compareTo(aO2.getStart()));
+
 		DateFormat tempDateFormat = DateFormat.getDateInstance(DateFormat.SHORT);
 		DateFormat tempTimeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+
 		String tempCurrentDay = null;
-		String tempStopTime = null;
-		boolean tempAddNextWorkingTime = false;
+		// Stop time may be taken from next tasks with different name.
+		String tempCurrentStopTime = null;
+		StringBuilder tempCurrentDayLine = new StringBuilder();
+
+		boolean tempAddNextStartTime = false;
+		boolean tempFirstStartTime = true;
 		for (Task tempTask : aTasks) {
 			String tempDay = tempDateFormat.format(tempTask.getStart());
-			String tempTime = tempTimeFormat.format(tempTask.getStart());
-			if (tempTask.getName().startsWith(dontSumChar.getChar())) {
+			String tempStartTime = tempTimeFormat.format(tempTask.getStart());
+			String tempTaskName = tempTask.getName();
+			if (tempTaskName.startsWith(dontSumChar.getChar())) {
 				// user made a break
-				if (tempStopTime != null) {
-					aReport.append(" - " + tempStopTime);
-					tempStopTime = null;
+				if (tempCurrentStopTime != null) {
+					tempCurrentDayLine.append(" - " + tempCurrentStopTime);
+					tempCurrentStopTime = null;
 				}
-				tempAddNextWorkingTime = true;
-			} else if (tempAddNextWorkingTime) {
-				aReport.append(" " + tempTime);
-				tempStopTime = tempTimeFormat.format(tempTask.getStop());
-				tempAddNextWorkingTime = false;
-			}
-			if (tempCurrentDay == null || !tempCurrentDay.equals(tempDay)) {
-				if (tempCurrentDay != null) {
-					if (tempStopTime != null) {
-						aReport.append(" - " + tempStopTime);
+				tempAddNextStartTime = true;
+			} else {
+				if (tempCurrentDay == null || !tempCurrentDay.equals(tempDay)) {
+					if (tempCurrentDayLine.length() > 0) {
+						if (tempCurrentStopTime != null) {
+							tempCurrentDayLine.append(" - " + tempCurrentStopTime);
+						}
+						aReport.append(tempCurrentDayLine);
+						aReport.append(CR);
+						tempCurrentDayLine.setLength(0);
 					}
-					aReport.append(CR);
+					tempCurrentDay = tempDay;
+					tempCurrentDayLine.append(tempDay + ":");
+					tempAddNextStartTime = true;
+					tempFirstStartTime = true;
 				}
-				tempCurrentDay = tempDay;
-				aReport.append(tempDay + ": " + tempTime);
+				if (tempAddNextStartTime) {
+					if (tempFirstStartTime) {
+						tempFirstStartTime = false;
+					} else {
+						// Append a delimiter for the breaks
+						tempCurrentDayLine.append("  / ");
+					}
+					tempCurrentDayLine.append(" " + tempStartTime);
+					tempAddNextStartTime = false;
+				}
+				tempCurrentStopTime = tempTimeFormat.format(tempTask.getStop());
 			}
-			tempStopTime = tempTimeFormat.format(tempTask.getStop());
+		}
+		if (tempCurrentDayLine.length() > 0) {
+			if (tempCurrentStopTime != null) {
+				tempCurrentDayLine.append(" - " + tempCurrentStopTime);
+			}
+			aReport.append(tempCurrentDayLine);
+			aReport.append(CR);
 		}
 	}
 

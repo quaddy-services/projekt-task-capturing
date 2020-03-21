@@ -117,9 +117,86 @@ public class TaskReportTest {
 		// @formatter:off
 		String tempExpected=
 				"01.03.20 00:00 - 20.03.20 00:00 Format: Hour\n" +
-				"17.03.20: 23:47 - 23:59\n" +
-				"18.03.20: 00:00 - 08:47 08:47 - 15:18 15:28 - 18:47 - 23:59\n" +
-				"19.03.20: 00:00";
+				"18.03.20: 08:47 - 15:18  /  15:28 - 18:47\n" +
+				"";
+		// @formatter:on
+		assertEquals(tempExpected, tempResultReport.toString());
+	}
+
+	@Test
+	public void testWorkingTimesReportOneDayWithBreaks() throws IOException, ParseException {
+
+		Locale.setDefault(Locale.GERMANY);
+		TaskHistory tempTaskHistory = new TaskHistory() {
+			@Override
+			protected Reader createReader() {
+				// @formatter:off
+				return new StringReader(
+						"IET Meeting	19.03.2020 08:57:13	19.03.2020 09:02:23\n" +
+						"IET Runtimes	19.03.2020 09:02:23	19.03.2020 12:20:59\n" +
+						"SDI Sonar	19.03.2020 12:20:59	19.03.2020 12:58:20\n" +
+						"T4S Architektur	19.03.2020 12:58:20	19.03.2020 13:57:50\n" +
+						"-Pause	19.03.2020 13:57:50	19.03.2020 14:32:12\n" +
+						"Mail	19.03.2020 14:32:12	19.03.2020 15:32:34\n" +
+						"T4S Meeting	19.03.2020 15:32:34	19.03.2020 15:50:24\n"+
+						"");
+				// @formatter:on
+			}
+		};
+		// Normally today -30 days but take date as testdata above
+		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("01.03.2020").getTime();
+		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("20.03.2020").getTime();
+
+		final StringBuffer tempReportString = new StringBuffer();
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+
+		StringBuilder tempResultReport = new StringBuilder();
+		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		System.out.println(tempReportString);
+
+		// @formatter:off
+		String tempExpected=
+				"01.03.20 00:00 - 20.03.20 00:00 Format: Hour\n" +
+				"19.03.20: 08:57 - 13:57  /  14:32 - 15:50\n" +
+				"";
+		// @formatter:on
+		assertEquals(tempExpected, tempResultReport.toString());
+	}
+
+	@Test
+	public void testWorkingTimesReportWhenRecordingIsStoppedNightlyNoBreaks() throws IOException, ParseException {
+
+		Locale.setDefault(Locale.GERMANY);
+		TaskHistory tempTaskHistory = new TaskHistory() {
+			@Override
+			protected Reader createReader() {
+				// @formatter:off
+				return new StringReader(
+						"IET Meeting	18.03.2020 08:47:42	18.03.2020 09:57:02\n" +
+						"T4S PO2ERP	18.03.2020 09:57:02	18.03.2020 10:53:42\n" +
+						"IET DirectMemory	18.03.2020 10:53:42	18.03.2020 14:10:15\n" +
+						"T4S Material	18.03.2020 14:10:15	18.03.2020 15:18:26\n");
+				// @formatter:on
+			}
+		};
+		// Normally today -30 days but take date as testdata above
+		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("01.03.2020").getTime();
+		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("20.03.2020").getTime();
+
+		final StringBuffer tempReportString = new StringBuffer();
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+
+		StringBuilder tempResultReport = new StringBuilder();
+		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		System.out.println(tempReportString);
+
+		// @formatter:off
+		String tempExpected=
+				"01.03.20 00:00 - 20.03.20 00:00 Format: Hour\n" +
+				"18.03.20: 08:47 - 15:18\n" +
+				"";
 		// @formatter:on
 		assertEquals(tempExpected, tempResultReport.toString());
 	}
