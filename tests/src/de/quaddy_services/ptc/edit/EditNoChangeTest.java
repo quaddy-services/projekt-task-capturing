@@ -1,5 +1,7 @@
 package de.quaddy_services.ptc.edit;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,27 +14,26 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 import de.quaddy_services.ptc.enterprise.EnterpriseUtil;
 import de.quaddy_services.ptc.store.PosAndContent;
 import de.quaddy_services.ptc.store.Task;
 import de.quaddy_services.ptc.store.TaskHistory;
 
-public class EditNoChangeTest extends TestCase {
+public class EditNoChangeTest {
 
-	private static final File TEST_FILE = new File(
-			"tests/src/de/quaddy_services/ptc/edit/EditNoChangeTest.txt");
+	private static final File TEST_FILE = new File("tests/src/de/quaddy_services/ptc/edit/EditNoChangeTest.txt");
 
 	/**
 	 * @param args
 	 * @throws ParseException
 	 * @throws IOException
 	 */
+	@Test
 	public void testNoChange() throws IOException {
 		List<String> tempOrig = readFile(TEST_FILE);
-		final File tempTestFile = File
-				.createTempFile("EditNoChangeTest", ".txt");
+		final File tempTestFile = File.createTempFile("EditNoChangeTest", ".txt");
 		tempTestFile.deleteOnExit();
 		copyFile(TEST_FILE, tempTestFile);
 		TaskHistory tempTaskHistory = new TaskHistory() {
@@ -46,10 +47,9 @@ public class EditNoChangeTest extends TestCase {
 		List<PosAndContent<Task>> tempTasks;
 		tempTasks = tempTaskHistory.getLastLinesForEdit();
 		tempStartPos = tempTasks.get(0).getPosInFile();
-		tempTaskEdtior.setTasks(tempTasks,new EnterpriseUtil());
+		tempTaskEdtior.setTasks(tempTasks, new EnterpriseUtil());
 		// tempTaskEdtior.show
-		for (Iterator<PosAndContent<Task>> i = tempTasks.iterator(); i
-				.hasNext();) {
+		for (Iterator<PosAndContent<Task>> i = tempTasks.iterator(); i.hasNext();) {
 			PosAndContent<Task> tempPosAndContent = i.next();
 			if (tempTaskEdtior.getDeletedTasks().contains(tempPosAndContent)) {
 				i.remove();
@@ -64,9 +64,9 @@ public class EditNoChangeTest extends TestCase {
 		System.out.println("ok");
 	}
 
-	private  List<String> readFile(File aTestFile) throws IOException {
+	private List<String> readFile(File aTestFile) throws IOException {
 		List<String> tempLines = new ArrayList<String>();
-		BufferedReader tempReader= new BufferedReader(new FileReader(aTestFile));
+		BufferedReader tempReader = new BufferedReader(new FileReader(aTestFile));
 		while (tempReader.ready()) {
 			tempLines.add(tempReader.readLine());
 		}
@@ -74,8 +74,7 @@ public class EditNoChangeTest extends TestCase {
 		return tempLines;
 	}
 
-	private  void copyFile(File aFrom, File aTo)
-			throws FileNotFoundException, IOException {
+	private void copyFile(File aFrom, File aTo) throws FileNotFoundException, IOException {
 		FileInputStream tempReader = new FileInputStream(aFrom);
 		FileOutputStream tempWriter = new FileOutputStream(aTo);
 		int tempRead;
@@ -86,6 +85,5 @@ public class EditNoChangeTest extends TestCase {
 		tempReader.close();
 		tempWriter.close();
 	}
-
 
 }

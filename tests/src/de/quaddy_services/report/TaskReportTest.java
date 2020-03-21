@@ -1,5 +1,7 @@
 package de.quaddy_services.report;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -11,21 +13,23 @@ import java.util.StringTokenizer;
 
 import javax.swing.Action;
 
+import org.junit.jupiter.api.Test;
+
 import de.quaddy_services.ptc.preferences.DontSumCharList;
 import de.quaddy_services.ptc.preferences.TaskDelimiterList;
 import de.quaddy_services.ptc.store.TaskHistory;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupBy;
 import de.quaddy_services.report.groupby.GroupByList;
-import junit.framework.TestCase;
 
-public class TaskReportTest extends TestCase {
+public class TaskReportTest {
 
 	/**
 	 * @param args
 	 * @throws ParseException
 	 * @throws IOException
 	 */
+	@Test
 	public void testReportCreation() throws IOException, ParseException {
 		Locale.setDefault(Locale.GERMANY);
 		TaskHistory tempTaskHistory = new TaskHistory() {
