@@ -33,8 +33,7 @@ public class TaskReport {
 	private boolean ignoreDontSumTasks = false;
 	private ReportType reportType;
 
-	public TaskReport(TaskHistory aTaksHistory, JFrame aFrame, TaskDelimiter aTaskDelimiter, DontSumChar aDontSumChar,
-			List<String> aFixedTaskNames) {
+	public TaskReport(TaskHistory aTaksHistory, JFrame aFrame, TaskDelimiter aTaskDelimiter, DontSumChar aDontSumChar, List<String> aFixedTaskNames) {
 		taskHistory = aTaksHistory;
 		frame = aFrame;
 		taskDelimiter = aTaskDelimiter;
@@ -44,8 +43,7 @@ public class TaskReport {
 
 	private static final String CR = System.lineSeparator();
 
-	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions)
-			throws IOException {
+	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions) throws IOException {
 		StringBuilder tempReport = new StringBuilder();
 		for (int i = 0; i < aGroupBy.length; i++) {
 			GroupBy tempGroupBy = aGroupBy[i];
@@ -68,10 +66,8 @@ public class TaskReport {
 		}
 	}
 
-	public void createReport(StringBuilder aReport, long aFrom, long aTo, GroupBy aGroupBy, TimeFormat aTimeFormat)
-			throws IOException {
-		DateFormat tempDateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-		aReport.append(tempDateTimeInstance.format(aFrom) + " - " + tempDateTimeInstance.format(aTo));
+	public void createReport(StringBuilder aReport, long aFrom, long aTo, GroupBy aGroupBy, TimeFormat aTimeFormat) throws IOException {
+		aReport.append(formatDateTime(aFrom, aTo));
 		aReport.append(" Format: ");
 		aReport.append(aTimeFormat.getName());
 		aReport.append(CR);
@@ -111,6 +107,14 @@ public class TaskReport {
 		} else {
 			throw new IllegalArgumentException("Invalid report: " + tempReportType);
 		}
+	}
+
+	/**
+	 *
+	 */
+	String formatDateTime(long aFrom, long aTo) {
+		DateFormat tempDateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		return tempDateTimeInstance.format(aFrom) + " - " + tempDateTimeInstance.format(aTo);
 	}
 
 	/**
@@ -242,8 +246,7 @@ public class TaskReport {
 		aReport.append(CR);
 	}
 
-	private void addTaskTime(String aTaskName, Task aTask, TimeAndSubtasks tempTimeAndSubtasks,
-			TimeFormat aTimeFormat) {
+	private void addTaskTime(String aTaskName, Task aTask, TimeAndSubtasks tempTimeAndSubtasks, TimeFormat aTimeFormat) {
 		long tempTaskTime = aTask.getStop().getTime() - aTask.getStart().getTime();
 		tempTimeAndSubtasks.time += aTimeFormat.roundToDisplay(tempTaskTime);
 		String tempTaskName = aTaskName;
