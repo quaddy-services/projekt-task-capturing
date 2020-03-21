@@ -3,7 +3,6 @@ package de.quaddy_services.report;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -50,11 +49,19 @@ public class TaskReportTest extends TestCase {
 			}
 
 			/**
-			 * Fix the locale for the JUnit test.
+			 * Avoid creating format via DateFormat.getDateTimeInstance as JDK11 may add a delimiter between date and time
+			 * even locale is fixed.
 			 */
 			@Override
-			DateFormat createDateTimeInstance() {
-				return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.GERMANY);
+			String formatDateTime(long aFrom, long aTo) {
+				return simpleFormat(aFrom) + " - " + simpleFormat(aTo);
+			}
+
+			/**
+			 * Fix the locale for the JUnit test.
+			 */
+			private String simpleFormat(long aDate) {
+				return new SimpleDateFormat("dd.MM.yy HH:mm").format(aDate);
 			}
 		};
 		tempReport.showReport(new SimpleDateFormat("dd.MM.yyyy").parse("01.10.2007").getTime(),

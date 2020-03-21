@@ -67,8 +67,7 @@ public class TaskReport {
 	}
 
 	public void createReport(StringBuilder aReport, long aFrom, long aTo, GroupBy aGroupBy, TimeFormat aTimeFormat) throws IOException {
-		DateFormat tempDateTimeInstance = createDateTimeInstance();
-		aReport.append(tempDateTimeInstance.format(aFrom) + " - " + tempDateTimeInstance.format(aTo));
+		aReport.append(formatDateTime(aFrom, aTo));
 		aReport.append(" Format: ");
 		aReport.append(aTimeFormat.getName());
 		aReport.append(CR);
@@ -113,8 +112,9 @@ public class TaskReport {
 	/**
 	 *
 	 */
-	DateFormat createDateTimeInstance() {
-		return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+	String formatDateTime(long aFrom, long aTo) {
+		DateFormat tempDateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		return tempDateTimeInstance.format(aFrom) + " - " + tempDateTimeInstance.format(aTo);
 	}
 
 	/**
