@@ -41,7 +41,7 @@ public class TaskReport {
 		fixedTaskNames = aFixedTaskNames;
 	}
 
-	private static final String CR = System.lineSeparator();
+	String CR = System.lineSeparator();
 
 	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions) throws IOException {
 		StringBuilder tempReport = new StringBuilder();
