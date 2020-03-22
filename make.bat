@@ -1,13 +1,52 @@
 echo on
+
 git pull
 if %errorlevel% == 1 pause
-echo %date% >src/version.txt
-git add src/version.txt
-if %errorlevel% == 1 pause
+
+set t=%temp%\build-dir-ptc
+
+set actualDir=%CD%
+
+rmdir %t% /s /q
+mkdir %t%
+mkdir %t%\target
+
+if x%java_home%x == xx set java_home=c:\programs\currentJDK
+%java_home%\bin\java -version 2>src\main\resources\make-info.txt
+if %errorlevel% == 1 goto noJDK
+
+type src\main\resources\make-info.txt
+
+echo %date% >src\main\resources\version.txt
+git add src/main/resources/version.txt
+git add src/main/resources/make-info.txt
 git commit -m %date%
-if %errorlevel% == 1 pause
 git push
 if %errorlevel% == 1 pause
-call mvn clean install
-if %errorlevel% == 1 pause
+
+xcopy src %t%\src *.* /s
+copy pom.xml %t% /y
+
+cd /D %t%
+
+call mvn -U clean install source:jar
+if %errorlevel% == 1 goto ende
+echo on
+
+del %actualDir%\target\*.jar
+copy target\*.jar %actualDir%\target\ /y
+
+goto ende
+
+:noJDK
+echo off
+echo ERROR:
+echo there is no link to the newest JDK in c:\programs\currentJDK
+echo you can create it via c:\Programs\SysinternalsSuite\junction.exe c:\programs\currentjdk "%currentjdk%"
+echo see https://technet.microsoft.com/de-de/sysinternals
+goto ende
+
 :ende
+
+cd /D %actualDir%
+
