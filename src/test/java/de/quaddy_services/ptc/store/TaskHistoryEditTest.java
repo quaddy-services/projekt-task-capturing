@@ -21,7 +21,7 @@ public class TaskHistoryEditTest {
 		TaskHistory tempTaskHistory = new TaskHistory() {
 			@Override
 			public File getActualFile() {
-				return new File("tests/src/de/quaddy_services/ptc/store/TaskHistoryEditTest.txt");
+				return new File("src/test/resources/de/quaddy_services/ptc/store/TaskHistoryEditTest.txt");
 			}
 		};
 		List<PosAndContent<Task>> tempList = tempTaskHistory.getLastLinesForEdit();
