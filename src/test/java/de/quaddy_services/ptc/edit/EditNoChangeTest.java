@@ -23,7 +23,7 @@ import de.quaddy_services.ptc.store.TaskHistory;
 
 public class EditNoChangeTest {
 
-	private static final File TEST_FILE = new File("tests/src/de/quaddy_services/ptc/edit/EditNoChangeTest.txt");
+	private static final File TEST_FILE = new File("src/test/resources/de/quaddy_services/ptc/edit/EditNoChangeTest.txt");
 
 	/**
 	 * @param args
