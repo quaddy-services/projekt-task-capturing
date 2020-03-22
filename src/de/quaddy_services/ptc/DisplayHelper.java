@@ -70,36 +70,39 @@ public class DisplayHelper {
 		tempDialog.setVisible(true);
 	}
 
-	public static void displayText(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions) {
+	public static void displayText(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions, boolean aScrollToBottom) {
 		if (aFrame == null) {
 			JFrame tempFrame = new JFrame();
 			tempFrame.setTitle(aTitle);
 			tempFrame.setVisible(true);
-			displayTextPrivate(tempFrame, aTitle, aText, aModalFlag, anActions);
+			displayTextPrivate(tempFrame, aTitle, aText, aModalFlag, anActions, aScrollToBottom);
 			tempFrame.dispose();
 		} else {
-			displayTextPrivate(aFrame, aTitle, aText, aModalFlag, anActions);
+			displayTextPrivate(aFrame, aTitle, aText, aModalFlag, anActions, aScrollToBottom);
 		}
 	}
 
 	public static void displayText(JFrame aFrame, String aTitle, String aText, boolean aModalFlag) {
-		displayText(aFrame, aTitle, aText, aModalFlag, null);
+		displayText(aFrame, aTitle, aText, aModalFlag, null, false);
 	}
 
-	private static void displayTextPrivate(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions) {
+	private static void displayTextPrivate(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions, boolean aScrollToBottom) {
 		final JDialog tempDialog = new JDialog(aFrame, aTitle);
 		tempDialog.setModal(aModalFlag);
 		Dimension tempScreen = Toolkit.getDefaultToolkit().getScreenSize();
 		tempDialog.setSize(tempScreen.width * 4 / 10, tempScreen.height * 4 / 5);
 		tempDialog.setLocation(tempScreen.width / 4, tempScreen.height / 10);
 		tempDialog.getContentPane().setLayout(new BorderLayout());
-		ScrollPane tempScrollPane = new ScrollPane();
 		JEditorPane tempEditorPane = new JEditorPane();
-		// TODO Replace by Font.MONOSPACED with JDK 6
-		tempEditorPane.setFont(new Font("Monospaced", 0, aFrame.getFont().getSize()));
+		JScrollPane tempScrollPane = new JScrollPane(tempEditorPane);
+		tempEditorPane.setFont(new Font(Font.MONOSPACED, 0, aFrame.getFont().getSize()));
 		tempEditorPane.setText(aText);
-		tempScrollPane.add(tempEditorPane);
 		tempDialog.getContentPane().add(tempScrollPane, BorderLayout.CENTER);
+		if (aScrollToBottom) {
+			tempEditorPane.setCaretPosition(tempEditorPane.getDocument().getLength() - 1);
+		} else {
+			tempEditorPane.setCaretPosition(0);
+		}
 		Action tempActionListener = new AbstractAction("OK") {
 			@Override
 			public void actionPerformed(ActionEvent aE) {
