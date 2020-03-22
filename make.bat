@@ -24,7 +24,7 @@ git commit -m %date%
 git push
 if %errorlevel% == 1 pause
 
-xcopy src %t%\src *.* /s
+xcopy src\*.* %t%\src /s
 copy pom.xml %t% /y
 
 cd /D %t%
