@@ -8,7 +8,7 @@ set t=%temp%\build-dir-ptc
 set actualDir=%CD%
 
 rmdir %t% /s /q
-mkdir %t%
+mkdir %t%\src
 mkdir %t%\target
 
 if x%java_home%x == xx set java_home=c:\programs\currentJDK
