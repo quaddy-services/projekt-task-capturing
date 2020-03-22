@@ -41,6 +41,7 @@ public class TaskReport {
 	}
 
 	String CR = System.lineSeparator();
+	private boolean scrollToBottom;
 
 	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions) throws IOException {
 		StringBuilder tempReport = new StringBuilder();
@@ -59,10 +60,17 @@ public class TaskReport {
 		boolean tempOld = frame.isAlwaysOnTop();
 		frame.setAlwaysOnTop(false);
 		try {
-			DisplayHelper.displayText(frame, "Report", tempReport, false, anActions);
+			DisplayHelper.displayText(frame, "Report", tempReport, false, anActions, isScrollToBottom());
 		} finally {
 			frame.setAlwaysOnTop(tempOld);
 		}
+	}
+
+	/**
+	 *
+	 */
+	private boolean isScrollToBottom() {
+		return scrollToBottom;
 	}
 
 	public void createReport(StringBuilder aReport, long aFrom, long aTo, GroupBy aGroupBy, TimeFormat aTimeFormat) throws IOException {
@@ -361,5 +369,12 @@ public class TaskReport {
 	 */
 	public void setReportType(ReportType aReportType) {
 		reportType = aReportType;
+	}
+
+	/**
+	 * @see #scrollToBottom
+	 */
+	public void setScrollToBottom(boolean aScrollToBottom) {
+		scrollToBottom = aScrollToBottom;
 	}
 }

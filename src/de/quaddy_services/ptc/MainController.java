@@ -736,7 +736,7 @@ public class MainController {
 	public void showWorkingTimes() {
 		try {
 			Calendar tempCal = Calendar.getInstance();
-			tempCal.set(Calendar.DAY_OF_YEAR, -30);
+			tempCal.set(Calendar.DAY_OF_YEAR, -120);
 			tempCal.set(Calendar.HOUR_OF_DAY, 0);
 			tempCal.set(Calendar.MINUTE, 0);
 			tempCal.set(Calendar.SECOND, 0);
@@ -747,6 +747,7 @@ public class MainController {
 					enterpriseUtil.getFixedTaskNames());
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getDefault() };
 			tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
+			tempTaskReport.setScrollToBottom(true);
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {
