@@ -1,12 +1,9 @@
-
 /.settings
-/.project
-
 /.project
 /target
 /bin
-/.settings
 /.classpath
 /deploy
 /sign.bat
 rebel.xml
+*.bak
