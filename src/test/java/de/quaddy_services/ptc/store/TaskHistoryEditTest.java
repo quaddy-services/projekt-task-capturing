@@ -1,6 +1,6 @@
 package de.quaddy_services.ptc.store;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +22,11 @@ public class TaskHistoryEditTest {
 			@Override
 			public File getActualFile() {
 				return new File("src/test/resources/de/quaddy_services/ptc/store/TaskHistoryEditTest.txt");
+			}
+
+			@Override
+			public void backupFile() {
+				// no backup file for test
 			}
 		};
 		List<PosAndContent<Task>> tempList = tempTaskHistory.getLastLinesForEdit();
