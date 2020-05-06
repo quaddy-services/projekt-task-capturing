@@ -25,10 +25,11 @@ class EnterpriseUtilSaveReportThread extends Thread {
 		// when Server is down on next call.
 		@Override
 		public void run() {
+			DisplayHelper tempDisplayHelper = new DisplayHelper();
 			if (result instanceof Throwable) {
-				DisplayHelper.displayException(controller.getFrame(), (Throwable) result);
+				tempDisplayHelper.displayException(controller.getFrame(), (Throwable) result);
 			} else {
-				DisplayHelper.displayText(controller.getFrame(), "Tasks saved.", "Tasks saved to booking system.\n" + result, true);
+				tempDisplayHelper.displayText(controller.getFrame(), "Tasks saved.", "Tasks saved to booking system.\n" + result, true);
 
 			}
 		};

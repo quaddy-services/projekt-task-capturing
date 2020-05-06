@@ -77,7 +77,7 @@ public abstract class AbstractEnterpriseUtilRemote implements EnterpriseUtilRemo
 
 		} catch (Exception e) {
 			LOG.exception(e);
-			DisplayHelper.displayException(aController.getFrame(), e);
+			new DisplayHelper().displayException(aController.getFrame(), e);
 		}
 	}
 

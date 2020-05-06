@@ -60,7 +60,8 @@ public class TaskReport {
 		boolean tempOld = frame.isAlwaysOnTop();
 		frame.setAlwaysOnTop(false);
 		try {
-			DisplayHelper.displayText(frame, "Report", tempReport, false, anActions, isScrollToBottom());
+			DisplayHelper tempDisplayHelper = new DisplayHelper();
+			tempDisplayHelper.displayText(frame, "Report", tempReport, false, anActions, isScrollToBottom());
 		} finally {
 			frame.setAlwaysOnTop(tempOld);
 		}

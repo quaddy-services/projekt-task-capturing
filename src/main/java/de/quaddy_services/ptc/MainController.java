@@ -648,7 +648,8 @@ public class MainController {
 					RoundingMode.HALF_UP);
 			String tempActualTaskName = model.getCurrentTask();
 			JLabel tempInfo = new JLabel("Add " + tempHours + " hours to " + tempActualTaskName + "?");
-			boolean tempContinue = DisplayHelper.displayComponent(frame, "Confirm Task", tempInfo);
+			DisplayHelper tempDisplayHelper = new DisplayHelper();
+			boolean tempContinue = tempDisplayHelper.displayComponent(frame, "Confirm Task", tempInfo);
 			if (tempContinue) {
 				// ok
 			} else {
@@ -720,11 +721,11 @@ public class MainController {
 
 	private void handleException(Exception aE) {
 		LOG.exception(aE);
-		DisplayHelper.displayException(frame, aE);
+		new DisplayHelper().displayException(frame, aE);
 	}
 
 	public void about() {
-		DisplayHelper.displayAbout(frame);
+		new DisplayHelper().displayAbout(frame);
 	}
 
 	public void showThisWeek() {
@@ -776,7 +777,8 @@ public class MainController {
 			tempReportSelection.setGroupBy(model.getGroupBy());
 			tempReportSelection.setTimeFormat(model.getTimeFormat());
 			tempReportSelection.setReportType(ReportTypeList.DEFAULT);
-			boolean tempOk = DisplayHelper.displayComponent(frame, "Select Report...", tempReportSelection);
+			DisplayHelper tempDisplayHelper = new DisplayHelper();
+			boolean tempOk = tempDisplayHelper.displayComponent(frame, "Select Report...", tempReportSelection);
 			if (tempOk) {
 				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
 						enterpriseUtil.getFixedTaskNames());
@@ -801,7 +803,8 @@ public class MainController {
 	public void options() {
 		PreferencesSelection tempPreferencesSelection = new PreferencesSelection();
 		tempPreferencesSelection.setValues(model.getProperties());
-		boolean tempOk = DisplayHelper.displayComponent(frame, "Select Preferences...", tempPreferencesSelection);
+		DisplayHelper tempDisplayHelper = new DisplayHelper();
+		boolean tempOk = tempDisplayHelper.displayComponent(frame, "Select Preferences...", tempPreferencesSelection);
 		if (tempOk) {
 			model.getProperties().putAll(tempPreferencesSelection.getValues());
 			FileUtil.setDataFolder(model.getDataFolder());
@@ -857,7 +860,7 @@ public class MainController {
 		TaskUpdater tempOldTaskUpdater = currentTaskUpdater;
 		frame.setAlwaysOnTop(false);
 		try {
-			if (DisplayHelper.displayComponent(frame, "Edit Tasks", tempTaskEdtior)) {
+			if (new DisplayHelper().displayComponent(frame, "Edit Tasks", tempTaskEdtior)) {
 				for (Iterator<PosAndContent<Task>> i = tempTasks.iterator(); i.hasNext();) {
 					PosAndContent<Task> tempPosAndContent = i.next();
 					if (tempTaskEdtior.getDeletedTasks().contains(tempPosAndContent)) {

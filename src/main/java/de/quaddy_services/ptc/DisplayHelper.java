@@ -29,7 +29,7 @@ import de.quaddy_services.ptc.about.AboutInfo;
 
 public class DisplayHelper {
 
-	public static void displayException(JFrame aFrame, Throwable aE) {
+	public void displayException(JFrame aFrame, Throwable aE) {
 		if (aFrame == null) {
 			JFrame tempFrame = new JFrame();
 			tempFrame.setTitle(aE.getMessage());
@@ -41,7 +41,7 @@ public class DisplayHelper {
 		}
 	}
 
-	private static void displayExceptionPrivate(JFrame aFrame, Throwable aE) {
+	private void displayExceptionPrivate(JFrame aFrame, Throwable aE) {
 		StringWriter tempStringWriter = new StringWriter();
 		PrintWriter tempPrintWriter = new PrintWriter(tempStringWriter);
 		aE.printStackTrace(tempPrintWriter);
@@ -70,7 +70,7 @@ public class DisplayHelper {
 		tempDialog.setVisible(true);
 	}
 
-	public static void displayText(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions, boolean aScrollToBottom) {
+	public void displayText(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions, boolean aScrollToBottom) {
 		if (aFrame == null) {
 			JFrame tempFrame = new JFrame();
 			tempFrame.setTitle(aTitle);
@@ -82,11 +82,11 @@ public class DisplayHelper {
 		}
 	}
 
-	public static void displayText(JFrame aFrame, String aTitle, String aText, boolean aModalFlag) {
+	public void displayText(JFrame aFrame, String aTitle, String aText, boolean aModalFlag) {
 		displayText(aFrame, aTitle, aText, aModalFlag, null, false);
 	}
 
-	private static void displayTextPrivate(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions, boolean aScrollToBottom) {
+	private void displayTextPrivate(JFrame aFrame, String aTitle, String aText, boolean aModalFlag, List<Action> anActions, boolean aScrollToBottom) {
 		final JDialog tempDialog = new JDialog(aFrame, aTitle);
 		tempDialog.setModal(aModalFlag);
 		Dimension tempScreen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -120,7 +120,7 @@ public class DisplayHelper {
 		tempDialog.setVisible(true);
 	}
 
-	private static Component createButtons(Action[] aActions) {
+	private Component createButtons(Action[] aActions) {
 		JPanel tempPanel = new JPanel();
 		int tempActionCount = 0;
 		for (int i = 0; i < aActions.length; i++) {
@@ -148,7 +148,7 @@ public class DisplayHelper {
 		return tempPanel;
 	}
 
-	public static void displayAbout(JFrame aFrame) {
+	public void displayAbout(JFrame aFrame) {
 		final JDialog tempDialog = new JDialog(aFrame);
 		tempDialog.setModal(true);
 		Dimension tempScreen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -170,7 +170,7 @@ public class DisplayHelper {
 		tempDialog.setVisible(true);
 	}
 
-	public static boolean displayComponent(JFrame aFrame, String aTitle, final Component aComponent) {
+	public boolean displayComponent(JFrame aFrame, String aTitle, final Component aComponent) {
 		final JDialog tempDialog = new JDialog(aFrame, aTitle);
 		final List<Boolean> tempResult = new LinkedList<Boolean>();
 		Dimension tempScreen = Toolkit.getDefaultToolkit().getScreenSize();
