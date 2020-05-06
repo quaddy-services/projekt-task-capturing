@@ -172,15 +172,25 @@ public class MainController {
 
 	private void reminderFlashNow() {
 		LOG.info("Reminder flash");
-		JFrame tempFrame = getFrame();
-		tempFrame.setFocusableWindowState(false);
-		try {
-			tempFrame.toFront();
-			tempFrame.setExtendedState(JFrame.ICONIFIED);
-			tempFrame.setExtendedState(JFrame.NORMAL);
-		} finally {
-			tempFrame.setFocusableWindowState(true);
-		}
+		final JFrame tempFrame = getFrame();
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				tempFrame.setFocusableWindowState(false);
+				try {
+					tempFrame.setAlwaysOnTop(true);
+					tempFrame.toFront();
+				} finally {
+					tempFrame.setFocusableWindowState(true);
+				}
+			};
+		});
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				refreshAlwaysOnTop(model.getCurrentTask());
+			};
+		});
 	}
 
 	private void setMainViewModel() throws IOException {
