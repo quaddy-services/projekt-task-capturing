@@ -1,6 +1,6 @@
 package de.quaddy_services.report;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -61,17 +61,20 @@ public class TaskReportTest {
 		System.out.println(tempReportString);
 		String tempExpected =
 		// @formatter:off
-				"01.10.07 00:00 - 02.10.07 00:00 Format: Hour\n"
-				+ "--- Total\n" + "      00,79 SWD-CR-O4 DownloadSelection\n"
-				+ "            01,42 SWD-SV0036-O4-Upload ErrorQueue\n"
-				+ "      04,94 SWD-SV0036-O4-Upload\n"
-				+ "            00,65 SWD-Support-OMS CareInstructions\n"
-				+ "            00,14 SWD-Support-OMS MSC\n"
-				+ "            01,10 SWD-Support-OMS OMS-Errors\n"
-				+ "      01,89 SWD-Support-OMS\n"
-				+ "      01,30 SWD-other TISA\n" + "08,92 Sum\n"
-				+ "\n"
-				+ "-------------\n";
+				"01.10.07 00:00 - 02.10.07 00:00 Format: Hour\n" + 
+				"--- Total\n" + 
+				"      00,80 SWD-CR-O4 DownloadSelection\n" + 
+				"            01,43 SWD-SV0036-O4-Upload ErrorQueue\n" + 
+				"      04,98 SWD-SV0036-O4-Upload\n" + 
+				"            00,66 SWD-Support-OMS CareInstructions\n" + 
+				"            00,14 SWD-Support-OMS MSC\n" + 
+				"            01,11 SWD-Support-OMS OMS-Errors\n" + 
+				"      01,91 SWD-Support-OMS\n" + 
+				"      01,31 SWD-other TISA\n" + 
+				"09,00 Sum\n" + 
+				"\n" + 
+				"-------------\n" + 
+				"";
 				// @formatter:on
 		assertEquals(tempExpected, tempReportString.toString());
 	}
