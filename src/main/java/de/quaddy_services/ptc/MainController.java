@@ -173,9 +173,14 @@ public class MainController {
 	private void reminderFlashNow() {
 		LOG.info("Reminder flash");
 		JFrame tempFrame = getFrame();
-		tempFrame.toFront();
-		tempFrame.setExtendedState(JFrame.ICONIFIED);
-		tempFrame.setExtendedState(JFrame.NORMAL);
+		tempFrame.setFocusableWindowState(false);
+		try {
+			tempFrame.toFront();
+			tempFrame.setExtendedState(JFrame.ICONIFIED);
+			tempFrame.setExtendedState(JFrame.NORMAL);
+		} finally {
+			tempFrame.setFocusableWindowState(true);
+		}
 	}
 
 	private void setMainViewModel() throws IOException {
@@ -249,7 +254,7 @@ public class MainController {
 
 		tempFrame.getContentPane().setLayout(new CardLayout());
 		tempFrame.getContentPane().add(tempMainView, "MainView");
-		tempFrame.invalidate();
+		tempFrame.setAutoRequestFocus(false);
 		tempFrame.setVisible(true);
 		if (frame != null) {
 			frame.dispose();
@@ -300,22 +305,15 @@ public class MainController {
 				Timer tempTimer = new Timer(3000, new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent aE) {
-						// DeIconify now.
-						int tempState = aFrame.getExtendedState();
-						tempState = tempState & ~Frame.ICONIFIED;
-						// aFrame.setExtendedState(tempState);
-						EventQueue.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								aFrame.setVisible(false);
-							}
-						});
-						EventQueue.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								aFrame.setVisible(true);
-							}
-						});
+						aFrame.setFocusableWindowState(false);
+						try {
+							// DeIconify now.
+							int tempState = aFrame.getExtendedState();
+							tempState = tempState & ~Frame.ICONIFIED;
+							aFrame.setExtendedState(tempState);
+						} finally {
+							aFrame.setFocusableWindowState(true);
+						}
 					}
 				});
 				tempTimer.setRepeats(false);
