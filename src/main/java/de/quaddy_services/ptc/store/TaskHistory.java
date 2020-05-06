@@ -307,7 +307,9 @@ public class TaskHistory implements TaskUpdater {
 				if (!hasNext()) {
 					throw new NoSuchElementException();
 				}
-				return nextTask;
+				Task tempNextTask = nextTask;
+				nextTask = null;
+				return tempNextTask;
 			}
 
 			@Override
