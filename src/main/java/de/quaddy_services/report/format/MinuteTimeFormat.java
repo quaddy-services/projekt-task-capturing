@@ -7,10 +7,12 @@ import java.text.DecimalFormat;
 
 public class MinuteTimeFormat implements TimeFormat {
 	private String name;
+
 	MinuteTimeFormat(String aName) {
 		// protected
 		name = aName;
 	}
+
 	private DecimalFormat format = new DecimalFormat("00");
 
 	@Override
@@ -33,7 +35,7 @@ public class MinuteTimeFormat implements TimeFormat {
 	@Override
 	public long roundToDisplay(long aTimeInMillis) {
 		// Round to minutes
-		return Math.round(aTimeInMillis/(60*1000))*(60*1000);
+		return Math.round(1.0 * aTimeInMillis / (60 * 1000)) * (60 * 1000);
 	}
 
 }
