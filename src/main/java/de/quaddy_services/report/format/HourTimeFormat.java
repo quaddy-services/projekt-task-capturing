@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 
 public class HourTimeFormat implements TimeFormat {
 	private String name;
+
 	HourTimeFormat(String aName) {
 		// protected
 		name = aName;
@@ -26,7 +27,7 @@ public class HourTimeFormat implements TimeFormat {
 
 	@Override
 	public long roundToDisplay(long aTimeInMillis) {
-		int tempRounded = Math.round(aTimeInMillis / FACTOR) * FACTOR;
+		int tempRounded = (int) (Math.round(1.0 * aTimeInMillis / FACTOR) * FACTOR);
 		return tempRounded;
 	}
 
