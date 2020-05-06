@@ -5,6 +5,9 @@ package de.quaddy_services.ptc;
 
 import java.awt.EventQueue;
 
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
+
 /**
  * @author Stefan Cordes
  *
@@ -21,7 +24,8 @@ public class PTC {
 				try {
 					mainEventQueue();
 				} catch (Exception e) {
-					e.printStackTrace();
+					Logger LOG = LoggerFactory.getLogger(PTC.class);
+					LOG.error("Error", e);
 					throw new RuntimeException(e);
 				}
 			}
