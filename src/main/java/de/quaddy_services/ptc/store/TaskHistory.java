@@ -28,7 +28,7 @@ public class TaskHistory implements TaskUpdater {
 	 */
 	public static final String TASK_CLOSED = "PTCEXIT";
 	public static final String TASK_STARTED = "PTCSTART";
-	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	public final DateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	private static final long CLASS_LOADING_TIME = System.currentTimeMillis();
 
 	private String fileName = "ptc.tasks.txt";
