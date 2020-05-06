@@ -528,9 +528,9 @@ public class MainController {
 		frame.setIconImage(tempBufferedImage);
 	}
 
-	private static final DateFormat TIME_HOUR_FORMAT = new SimpleDateFormat("HH:mm");
-	private static final DateFormat TIME_MINUTE_FORMAT = new SimpleDateFormat("mm:ss");
-	private static final long ONE_HOUR_IN_MILLIS = 3600l * 1000l;
+	private final DateFormat TIME_HOUR_FORMAT = new SimpleDateFormat("HH:mm");
+	private final DateFormat TIME_MINUTE_FORMAT = new SimpleDateFormat("mm:ss");
+	private final long ONE_HOUR_IN_MILLIS = 3600l * 1000l;
 
 	private String formatTitleTime(Task aCurrentTask) {
 		Calendar tempCal = Calendar.getInstance();
