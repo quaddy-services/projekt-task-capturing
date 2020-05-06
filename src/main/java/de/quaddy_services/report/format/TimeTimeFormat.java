@@ -39,7 +39,9 @@ public class TimeTimeFormat implements TimeFormat {
 	@Override
 	public long roundToDisplay(long aTimeInMillis) {
 		// Round to minutes
-		return Math.round(aTimeInMillis / (60 * 1000)) * (60 * 1000);
+		double tempWithDecimals = 1.0 * aTimeInMillis / (60 * 1000);
+		long tempRounded = Math.round(tempWithDecimals);
+		return Math.round(tempRounded * (1.0 * 60 * 1000));
 	}
 
 }
