@@ -8,9 +8,12 @@ import java.io.InputStreamReader;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.ptc.store.TaskHistory;
 
 public class AboutInfo extends JPanel {
+	private static final Logger LOG = LoggerFactory.getLogger(AboutInfo.class);
 
 	public AboutInfo() {
 		JTextPane tempArea = new JTextPane();
@@ -62,7 +65,7 @@ public class AboutInfo extends JPanel {
 			tempRead.close();
 			return tempVersion;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOG.error("Error", e);
 			return "";
 		}
 	}
