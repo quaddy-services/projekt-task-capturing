@@ -57,6 +57,7 @@ import de.quaddy_services.ptc.enterprise.EnterpriseUtil;
 import de.quaddy_services.ptc.enterprise.EnterpriseUtilRemote;
 import de.quaddy_services.ptc.logging.Logger;
 import de.quaddy_services.ptc.logging.LoggerFactory;
+import de.quaddy_services.ptc.preferences.DontSumChar;
 import de.quaddy_services.ptc.preferences.PreferencesSelection;
 import de.quaddy_services.ptc.store.BackupFile;
 import de.quaddy_services.ptc.store.FileUtil;
@@ -243,7 +244,6 @@ public class MainController {
 		if (tempFrame.getY() + tempFrame.getHeight() < 5) {
 			tempFrame.setLocation(tempFrame.getX(), 0);
 		}
-		tempFrame.setAlwaysOnTop(model.isAlwaysOnTop());
 		tempFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		initFrameListeners(tempFrame);
 
@@ -255,6 +255,22 @@ public class MainController {
 			frame.dispose();
 		}
 		frame = tempFrame;
+		refreshAlwaysOnTop(model.getCurrentTask());
+	}
+
+	private void refreshAlwaysOnTop(String aCurrentTask) {
+		DontSumChar tempDontSumChar = model.getDontSumChar();
+
+		boolean tempNewOnTop;
+		if (aCurrentTask != null && tempDontSumChar != null && aCurrentTask.startsWith(tempDontSumChar.getChar())) {
+			tempNewOnTop = model.isAlwaysOnTopWhenPause();
+		} else {
+			tempNewOnTop = model.isAlwaysOnTop();
+		}
+		if (frame.isAlwaysOnTop() ^ tempNewOnTop) {
+			LOG.info("Switch alwaysOnTop: " + tempNewOnTop);
+			frame.setAlwaysOnTop(tempNewOnTop);
+		}
 	}
 
 	private void initFrameListeners(final JFrame aFrame) {
@@ -393,7 +409,7 @@ public class MainController {
 	 */
 	private void fireNetworkDriveOk() {
 		networkDriveNotAvailableReported = false;
-		frame.setAlwaysOnTop(model.isAlwaysOnTop());
+		refreshAlwaysOnTop(model.getCurrentTask());
 	}
 
 	/**
@@ -598,6 +614,7 @@ public class MainController {
 			LOG.info("Ignore empty String inTaskAccepting: '" + aString + "'");
 			return;
 		}
+		refreshAlwaysOnTop(aString);
 		LOG.info("Other Task requested: '" + aString + "'");
 		if (taskAcceptTimer != null) {
 			taskAcceptTimer.stop();
@@ -797,7 +814,7 @@ public class MainController {
 			} catch (IOException e) {
 				handleException(e);
 			}
-			frame.setAlwaysOnTop(model.isAlwaysOnTop());
+			refreshAlwaysOnTop(model.getCurrentTask());
 		}
 	}
 
@@ -857,7 +874,7 @@ public class MainController {
 			}
 		} finally {
 			currentTaskUpdater = tempOldTaskUpdater;
-			frame.setAlwaysOnTop(model.isAlwaysOnTop());
+			refreshAlwaysOnTop(model.getCurrentTask());
 		}
 	}
 

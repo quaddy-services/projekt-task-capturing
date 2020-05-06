@@ -36,6 +36,10 @@ public class PreferencesSelection extends JPanel {
 	private JComboBox timeFormat = new JComboBox();
 	private JTextField enterpriseServer = new JTextField();
 	private JCheckBox alwaysOnTop = new JCheckBox();
+	/**
+	 * @since 2020-05-05
+	 */
+	private JCheckBox alwaysOnTopWhenPause = new JCheckBox();
 	private JTextField reminderFlashOnMinute = new JTextField();
 	private JTextField dataFolder = new JTextField();
 	private JButton dataFolderSelection = new JButton("...");
@@ -113,6 +117,12 @@ public class PreferencesSelection extends JPanel {
 
 		x = 0;
 		y++;
+		add(new JLabel("Always on top when pause:"), createGrid(x, y));
+		x++;
+		add(alwaysOnTopWhenPause, createGrid(x, y));
+
+		x = 0;
+		y++;
 		add(new JLabel("Reminderflash on Minute:"), createGrid(x, y));
 		x++;
 		add(reminderFlashOnMinute, createGrid(x, y));
@@ -186,6 +196,7 @@ public class PreferencesSelection extends JPanel {
 		timeFormat.setSelectedItem(TimeFormatList.DEFAULT);
 		enterpriseServer.setText("");
 		alwaysOnTop.setSelected(false);
+		alwaysOnTopWhenPause.setSelected(true);
 		reminderFlashOnMinute.setText("57");
 		dataFolder.setText(FileUtil.getDefaultDataFolder());
 	}
@@ -211,6 +222,7 @@ public class PreferencesSelection extends JPanel {
 		groupBy.setSelectedItem(aProperties.getProperty(Preferences.GROUP_BY, GroupByList.DEFAULT));
 		enterpriseServer.setText(aProperties.getProperty(Preferences.ENTERPRISE_SERVER, ""));
 		alwaysOnTop.setSelected(Boolean.valueOf(aProperties.getProperty(Preferences.ALWAYS_ON_TOP, "" + Boolean.FALSE)));
+		alwaysOnTopWhenPause.setSelected(Boolean.valueOf(aProperties.getProperty(Preferences.ALWAYS_ON_TOP_WHEN_PAUSE, "" + Boolean.TRUE)));
 		reminderFlashOnMinute.setText(aProperties.getProperty(Preferences.REMINDER_FLASH_ON_MINUTE, "57"));
 		dataFolder.setText(aProperties.getProperty(Preferences.DATA_FOLDER, FileUtil.getDefaultDataFolder()));
 	}
@@ -223,6 +235,7 @@ public class PreferencesSelection extends JPanel {
 		tempProperties.setProperty(Preferences.GROUP_BY, (String) groupBy.getSelectedItem());
 		tempProperties.setProperty(Preferences.ENTERPRISE_SERVER, enterpriseServer.getText());
 		tempProperties.setProperty(Preferences.ALWAYS_ON_TOP, "" + alwaysOnTop.isSelected());
+		tempProperties.setProperty(Preferences.ALWAYS_ON_TOP_WHEN_PAUSE, "" + alwaysOnTopWhenPause.isSelected());
 		tempProperties.setProperty(Preferences.REMINDER_FLASH_ON_MINUTE, reminderFlashOnMinute.getText());
 		tempProperties.setProperty(Preferences.DATA_FOLDER, dataFolder.getText());
 		return tempProperties;

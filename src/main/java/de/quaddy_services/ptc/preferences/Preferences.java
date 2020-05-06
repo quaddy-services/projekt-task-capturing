@@ -9,4 +9,8 @@ public interface Preferences {
 	public static final String ALWAYS_ON_TOP = "alwaysOnTop";
 	public static final String REMINDER_FLASH_ON_MINUTE = "reminderFlashOnMinute";
 	public static final String DATA_FOLDER = "dataFolder";
+	/**
+	 * @since 2020-05-05
+	 */
+	public static final String ALWAYS_ON_TOP_WHEN_PAUSE = "alwaysOnTopWhenPause";
 }

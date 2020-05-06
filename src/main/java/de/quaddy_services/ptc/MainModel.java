@@ -187,4 +187,7 @@ public class MainModel {
 		return Boolean.valueOf(getProperties().getProperty(Preferences.ALWAYS_ON_TOP, Boolean.FALSE.toString()));
 	}
 
+	public boolean isAlwaysOnTopWhenPause() {
+		return Boolean.valueOf(getProperties().getProperty(Preferences.ALWAYS_ON_TOP_WHEN_PAUSE, Boolean.TRUE.toString()));
+	}
 }
