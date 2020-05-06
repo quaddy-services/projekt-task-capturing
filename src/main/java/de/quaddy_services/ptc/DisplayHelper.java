@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.WindowConstants;
 
 import de.quaddy_services.ptc.about.AboutInfo;
 
@@ -66,7 +67,7 @@ public class DisplayHelper {
 			}
 		};
 		tempDialog.getContentPane().add(createButtons(new Action[] { tempActionListener }), BorderLayout.SOUTH);
-		tempDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		tempDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		tempDialog.setVisible(true);
 	}
 
@@ -122,12 +123,6 @@ public class DisplayHelper {
 
 	private Component createButtons(Action[] aActions) {
 		JPanel tempPanel = new JPanel();
-		int tempActionCount = 0;
-		for (int i = 0; i < aActions.length; i++) {
-			if (aActions[i] != null) {
-				tempActionCount++;
-			}
-		}
 		tempPanel.setLayout(new GridBagLayout());
 		GridBagConstraints tempGBC = new GridBagConstraints();
 		tempGBC.weightx = 1.0;
