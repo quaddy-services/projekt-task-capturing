@@ -30,9 +30,9 @@ public class CommentDuration implements Comparable<CommentDuration> {
 	public int compareTo(CommentDuration aO) {
 		int tempCompareTo = getDuration().compareTo(aO.getDuration());
 		if (Integer.MIN_VALUE == tempCompareTo) {
-			return Integer.MAX_VALUE;
+			return 1;
 		} else if (Integer.MAX_VALUE == tempCompareTo) {
-			return Integer.MIN_VALUE;
+			return -1;
 		}
 		return -tempCompareTo;
 	}
