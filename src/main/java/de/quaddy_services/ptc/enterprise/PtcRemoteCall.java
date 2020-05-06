@@ -12,6 +12,8 @@ import java.net.Socket;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.io.serialization.ValidatingObjectInputStream;
+
 /**
  * @author user
  * 
@@ -38,8 +40,7 @@ public class PtcRemoteCall {
 
 	@SuppressWarnings("unchecked")
 	public List<String> getBookableTaskNames(String aUserName) {
-		Object tempExecuteResult = execute(COMMAND_GET_BOOKABLE_TASK_NAMES
-				+ "\t" + aUserName);
+		Object tempExecuteResult = execute(COMMAND_GET_BOOKABLE_TASK_NAMES + "\t" + aUserName);
 		if (tempExecuteResult instanceof RuntimeException) {
 			throw (RuntimeException) tempExecuteResult;
 		}
@@ -49,11 +50,10 @@ public class PtcRemoteCall {
 	private Object execute(String aCommand) {
 		try {
 			OutputStream tempOutputStream = getOutputStream();
-			ObjectOutputStream tempObjectOutputStream = new ObjectOutputStream(
-					tempOutputStream);
+			ObjectOutputStream tempObjectOutputStream = new ObjectOutputStream(tempOutputStream);
 			tempObjectOutputStream.writeObject(aCommand);
 			tempObjectOutputStream.flush();
-			ObjectInputStream tempOI = new ObjectInputStream(getInputStream());
+			ObjectInputStream tempOI = new ValidatingObjectInputStream(getInputStream());
 			Object tempBytes = tempOI.readObject();
 			tempOI.close();
 			return tempBytes;
@@ -87,18 +87,16 @@ public class PtcRemoteCall {
 	private Socket getSocket() throws IOException {
 		if (socket == null) {
 			StringTokenizer tempTokens = new StringTokenizer(socketText, ":");
-			socket = new Socket(tempTokens.nextToken(), new Integer(tempTokens
-					.nextToken()).intValue());
+			socket = new Socket(tempTokens.nextToken(), new Integer(tempTokens.nextToken()).intValue());
 		}
 		return socket;
 	}
 
 	public String saveReport(String aUserName, String aReport) {
-		Object tempExecuteResult = execute(COMMAND_SAVE_REPORT + "\t"
-				+ aUserName + "\t" + aReport);
+		Object tempExecuteResult = execute(COMMAND_SAVE_REPORT + "\t" + aUserName + "\t" + aReport);
 		if (tempExecuteResult instanceof RuntimeException) {
 			throw (RuntimeException) tempExecuteResult;
 		}
-		return (String)tempExecuteResult;
+		return (String) tempExecuteResult;
 	}
 }

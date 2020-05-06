@@ -29,13 +29,17 @@ copy pom.xml %t% /y
 
 cd /D %t%
 
-call mvn -U clean install source:jar
+set CURRENT_DATE=%date:~6,4%.%date:~3,2%.%date:~0,2%
+
+call mvn -U clean install source:jar -Drevision=%CURRENT_DATE%
 if %errorlevel% == 1 goto ende
 echo on
 
 del %actualDir%\target\*.jar
 copy target\*.jar %actualDir%\target\ /y
 copy target\*.jar c:\temp\ /y
+
+rmdir %t% /s /q
 
 goto ende
 

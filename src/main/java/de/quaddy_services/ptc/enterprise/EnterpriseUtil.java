@@ -1,10 +1,5 @@
 package de.quaddy_services.ptc.enterprise;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Action;
@@ -70,6 +65,7 @@ public class EnterpriseUtil implements EnterpriseUtilRemote {
 		}
 		return remote.createShowReportAction(aController, aFrom, aTo);
 	}
+
 	@Override
 	public Action createShowBookingSystemAction(MainController aController) {
 		if (remote == null) {
