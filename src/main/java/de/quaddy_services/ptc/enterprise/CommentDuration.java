@@ -28,7 +28,13 @@ public class CommentDuration implements Comparable<CommentDuration> {
 
 	@Override
 	public int compareTo(CommentDuration aO) {
-		return -getDuration().compareTo(aO.getDuration());
+		int tempCompareTo = getDuration().compareTo(aO.getDuration());
+		if (Integer.MIN_VALUE == tempCompareTo) {
+			return Integer.MAX_VALUE;
+		} else if (Integer.MAX_VALUE == tempCompareTo) {
+			return Integer.MIN_VALUE;
+		}
+		return -tempCompareTo;
 	}
 
 }
