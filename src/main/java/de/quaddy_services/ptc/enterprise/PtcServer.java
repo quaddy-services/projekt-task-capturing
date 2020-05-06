@@ -17,6 +17,8 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.serialization.ValidatingObjectInputStream;
+
 import de.quaddy_services.ptc.enterprise.custom.PtcFunction;
 import de.quaddy_services.ptc.enterprise.custom.PtcTask;
 import de.quaddy_services.ptc.enterprise.report.EnterpriseReportParser;
@@ -95,8 +97,10 @@ public class PtcServer {
 	private void runForClient(Socket aClient) throws Exception {
 		InputStream tempIn = aClient.getInputStream();
 		OutputStream tempOut = aClient.getOutputStream();
-		ObjectInputStream tempObjectInputStream = new ObjectInputStream(tempIn);
-		String tempObject = (String) tempObjectInputStream.readObject();
+		String tempObject;
+		try (ObjectInputStream tempObjectInputStream = new ValidatingObjectInputStream(tempIn)) {
+			tempObject = (String) tempObjectInputStream.readObject();
+		}
 		LOG.info(tempObject);
 		StringTokenizer tempTokens = new StringTokenizer(tempObject, "\t");
 		String tempCommand = tempTokens.nextToken();
