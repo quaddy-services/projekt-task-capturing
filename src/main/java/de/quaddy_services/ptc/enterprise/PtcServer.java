@@ -63,21 +63,22 @@ public class PtcServer {
 	private ExecutorService executorService;
 
 	private void run(int aPort) throws IOException {
-		ServerSocket tempServerSocket = new ServerSocket(aPort);
-		LOG.info("Running on " + tempServerSocket);
-		LOG.info("PtcFunction=" + getPtcFunction());
-		while (true) {
-			final Socket tempClient = tempServerSocket.accept();
-			executorService.execute(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						runForClient(tempClient);
-					} catch (Exception e) {
-						LOG.exception(e);
+		try (ServerSocket tempServerSocket = new ServerSocket(aPort)) {
+			LOG.info("Running on " + tempServerSocket);
+			LOG.info("PtcFunction=" + getPtcFunction());
+			while (true) {
+				final Socket tempClient = tempServerSocket.accept();
+				executorService.execute(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							runForClient(tempClient);
+						} catch (Exception e) {
+							LOG.exception(e);
+						}
 					}
-				}
-			});
+				});
+			}
 		}
 	}
 
