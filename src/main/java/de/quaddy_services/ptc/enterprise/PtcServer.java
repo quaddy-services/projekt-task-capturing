@@ -78,6 +78,12 @@ public class PtcServer {
 						}
 					}
 				});
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					LOG.exception(e);
+					break;
+				}
 			}
 		}
 	}
