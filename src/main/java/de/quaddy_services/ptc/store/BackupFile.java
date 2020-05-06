@@ -27,15 +27,15 @@ public class BackupFile {
 	}
 
 	private void copyFile(File aFrom, File aTo) throws FileNotFoundException, IOException {
-		FileInputStream tempReader = new FileInputStream(aFrom);
-		FileOutputStream tempWriter = new FileOutputStream(aTo);
-		int tempRead;
-		byte[] tempBuff = new byte[1024 * 20];
-		while (0 <= (tempRead = tempReader.read(tempBuff))) {
-			tempWriter.write(tempBuff, 0, tempRead);
+		try (FileInputStream tempReader = new FileInputStream(aFrom)) {
+			try (FileOutputStream tempWriter = new FileOutputStream(aTo)) {
+				int tempRead;
+				byte[] tempBuff = new byte[1024 * 20];
+				while (0 <= (tempRead = tempReader.read(tempBuff))) {
+					tempWriter.write(tempBuff, 0, tempRead);
+				}
+			}
 		}
-		tempReader.close();
-		tempWriter.close();
 	}
 
 	private File createBackupFile(File aFile, int i) {
