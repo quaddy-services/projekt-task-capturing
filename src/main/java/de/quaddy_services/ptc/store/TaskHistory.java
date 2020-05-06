@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import de.quaddy_services.ptc.logging.Logger;
@@ -279,30 +280,34 @@ public class TaskHistory implements TaskUpdater {
 	public Iterator<Task> getTaskIterator() throws IOException {
 		iteratorReader = new BufferedReader(createReader());
 		class TaskIterator implements Iterator<Task> {
-			TaskIterator() throws IOException {
-				nextTask = readNextTask();
+			TaskIterator() {
+				super();
 			}
 
 			private Task nextTask;
 
 			@Override
 			public boolean hasNext() {
+				if (nextTask == null) {
+					try {
+						nextTask = readNextTask();
+					} catch (Exception e) {
+						closeIteratorReader();
+						throw new RuntimeException(e);
+					}
+					if (nextTask == null) {
+						closeIteratorReader();
+					}
+				}
 				return nextTask != null;
 			}
 
 			@Override
 			public Task next() {
-				Task tempNextTask = nextTask;
-				try {
-					nextTask = readNextTask();
-				} catch (Exception e) {
-					closeIteratorReader();
-					throw new RuntimeException(e);
+				if (!hasNext()) {
+					throw new NoSuchElementException();
 				}
-				if (nextTask == null) {
-					closeIteratorReader();
-				}
-				return tempNextTask;
+				return nextTask;
 			}
 
 			@Override
