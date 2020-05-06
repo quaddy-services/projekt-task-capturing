@@ -35,6 +35,7 @@ echo on
 
 del %actualDir%\target\*.jar
 copy target\*.jar %actualDir%\target\ /y
+copy target\*.jar c:\temp\ /y
 
 goto ende
 
