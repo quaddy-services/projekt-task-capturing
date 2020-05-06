@@ -387,33 +387,33 @@ public class TaskHistory implements TaskUpdater {
 		if (!tempFile.exists()) {
 			return tempLastTasks;
 		}
-		RandomAccessFile tempContent = new RandomAccessFile(tempFile, "r");
-		long tempSize = tempContent.length();
-		if (tempSize > 0) {
-			// Find last line
-			long tempPos = Math.max(0, tempSize - 50000);
-			tempContent.seek(tempPos);
-			int tempLen = (int) (tempSize - tempPos);
-			byte[] tempBytes = new byte[tempLen];
-			tempContent.readFully(tempBytes, 0, tempLen);
-			String tempLastLines = new String(tempBytes);
-			StringTokenizer tempTokens = new StringTokenizer(tempLastLines, "\r\n");
-			if (tempTokens.hasMoreElements()) {
-				// Skip first token.
-				tempTokens.nextToken();
-			}
-			while (tempTokens.hasMoreElements()) {
-				StringTokenizer tempTaskTokens = new StringTokenizer(tempTokens.nextToken(), "\t");
-				if (tempTaskTokens.countTokens() == 3) {
-					String tempTaskName = tempTaskTokens.nextToken();
-					if (!isInternalTask(tempTaskName) && tempTaskName.trim().length() > 0) {
-						tempLastTasks.remove(tempTaskName);
-						tempLastTasks.add(0, tempTaskName);
+		try (RandomAccessFile tempContent = new RandomAccessFile(tempFile, "r")) {
+			long tempSize = tempContent.length();
+			if (tempSize > 0) {
+				// Find last line
+				long tempPos = Math.max(0, tempSize - 50000);
+				tempContent.seek(tempPos);
+				int tempLen = (int) (tempSize - tempPos);
+				byte[] tempBytes = new byte[tempLen];
+				tempContent.readFully(tempBytes, 0, tempLen);
+				String tempLastLines = new String(tempBytes);
+				StringTokenizer tempTokens = new StringTokenizer(tempLastLines, "\r\n");
+				if (tempTokens.hasMoreElements()) {
+					// Skip first token.
+					tempTokens.nextToken();
+				}
+				while (tempTokens.hasMoreElements()) {
+					StringTokenizer tempTaskTokens = new StringTokenizer(tempTokens.nextToken(), "\t");
+					if (tempTaskTokens.countTokens() == 3) {
+						String tempTaskName = tempTaskTokens.nextToken();
+						if (!isInternalTask(tempTaskName) && tempTaskName.trim().length() > 0) {
+							tempLastTasks.remove(tempTaskName);
+							tempLastTasks.add(0, tempTaskName);
+						}
 					}
 				}
 			}
 		}
-		tempContent.close();
 		return tempLastTasks;
 	}
 
@@ -423,13 +423,12 @@ public class TaskHistory implements TaskUpdater {
 
 	public void saveTasks(long aStartPos, List<PosAndContent<Task>> aTasks) throws IOException {
 		File tempFile = getActualFile();
-		RandomAccessFile tempContent = new RandomAccessFile(tempFile, "rw");
-		tempContent.setLength(aStartPos);
-		tempContent.seek(aStartPos);
-		for (PosAndContent<Task> tempPosAndContent : aTasks) {
-			tempContent.write(format(tempPosAndContent.getLine()));
+		try (RandomAccessFile tempContent = new RandomAccessFile(tempFile, "rw")) {
+			tempContent.setLength(aStartPos);
+			tempContent.seek(aStartPos);
+			for (PosAndContent<Task> tempPosAndContent : aTasks) {
+				tempContent.write(format(tempPosAndContent.getLine()));
+			}
 		}
-		tempContent.close();
-
 	}
 }
