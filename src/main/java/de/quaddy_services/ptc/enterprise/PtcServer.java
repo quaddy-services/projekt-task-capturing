@@ -82,6 +82,10 @@ public class PtcServer {
 					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					LOG.exception(e);
+					// Restore interrupted state...
+					Thread.currentThread().interrupt();
+				}
+				if (Thread.interrupted()) {
 					break;
 				}
 			}
