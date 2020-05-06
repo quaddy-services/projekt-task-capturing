@@ -20,16 +20,14 @@ import de.quaddy_services.ptc.store.Task;
 import de.quaddy_services.ptc.store.TaskHistory;
 
 public abstract class TaskEdit extends JPanel {
-	private static final String INTERNAL_REMARK = "<html><body>This is an internal taks marking<br>"
-			+ "the end of a session<br>"
-			+ "(program exit or shutdown).<br>"
-			+ "Deleting it will <b>not</b> have any impact on reports,<br>"
+	private static final String INTERNAL_REMARK = "<html><body>This is an internal taks marking<br>" + "the end of a session<br>"
+			+ "(program exit or shutdown).<br>" + "Deleting it will <b>not</b> have any impact on reports,<br>"
 			+ "but you loose the information when a shutdown did take place.</body></html>";
 	private Task task;
 	private JFormattedTextField to;
 	private EnterpriseUtilRemote enterpriseUtil;
-	
-	public TaskEdit(PosAndContent<Task> aPosAndContent,EnterpriseUtilRemote anEnterpriseUtil) {
+
+	public TaskEdit(PosAndContent<Task> aPosAndContent, EnterpriseUtilRemote anEnterpriseUtil) {
 		task = aPosAndContent.getLine();
 		enterpriseUtil = anEnterpriseUtil;
 		init(task);
@@ -45,7 +43,8 @@ public abstract class TaskEdit extends JPanel {
 
 		final JTextField tempName = new JTextField();
 		tempName.setText(aTask.getName());
-		if (TaskHistory.isInternalTask(aTask.getName())) {
+		TaskHistory tempTaskHistory = new TaskHistory();
+		if (tempTaskHistory.isInternalTask(aTask.getName())) {
 			tempName.setEditable(false);
 			tempName.setEnabled(false);
 			tempName.setToolTipText(INTERNAL_REMARK);
@@ -62,8 +61,7 @@ public abstract class TaskEdit extends JPanel {
 		tempGBC.gridx++;
 		tempGBC.weightx = 0.0;
 
-		final JFormattedTextField tempFrom = new JFormattedTextField(
-				TaskHistory.DATE_FORMAT);
+		final JFormattedTextField tempFrom = new JFormattedTextField(tempTaskHistory.DATE_FORMAT);
 		tempFrom.setValue(aTask.getStart());
 		add(tempFrom, tempGBC);
 		tempGBC.gridx++;
@@ -79,7 +77,7 @@ public abstract class TaskEdit extends JPanel {
 		add(new JLabel("-"), tempGBC);
 		tempGBC.gridx++;
 
-		to = new JFormattedTextField(TaskHistory.DATE_FORMAT);
+		to = new JFormattedTextField(tempTaskHistory.DATE_FORMAT);
 		to.setValue(aTask.getStop());
 		add(to, tempGBC);
 		tempGBC.gridx++;
@@ -103,7 +101,7 @@ public abstract class TaskEdit extends JPanel {
 				fireDeleted();
 			}
 		});
-		if (TaskHistory.isInternalTask(aTask.getName())) {
+		if (tempTaskHistory.isInternalTask(aTask.getName())) {
 			tempButton.setToolTipText(INTERNAL_REMARK);
 		}
 		add(tempButton, tempGBC);

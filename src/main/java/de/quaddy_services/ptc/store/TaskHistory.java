@@ -417,7 +417,7 @@ public class TaskHistory implements TaskUpdater {
 		return tempLastTasks;
 	}
 
-	public static boolean isInternalTask(String tempTaskName) {
+	public boolean isInternalTask(String tempTaskName) {
 		return TASK_CLOSED.equals(tempTaskName) || TASK_STARTED.equals(tempTaskName);
 	}
 
