@@ -2,8 +2,14 @@ package de.quaddy_services.report;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,8 +46,31 @@ public class TaskReport {
 		fixedTaskNames = aFixedTaskNames;
 	}
 
+	/**
+	 * For test only.
+	 */
+	TaskReport() {
+		super();
+	}
+
 	String CR = System.lineSeparator();
 	private boolean scrollToBottom;
+	/**
+	 * https://github.com/quaddy-services/projekt-task-capturing/issues/22
+	 *
+	 * Show average hours per working day
+	 *
+	 * @since 2020-07-07
+	 */
+	private int workingMonthsAverage;
+	/**
+	 * https://github.com/quaddy-services/projekt-task-capturing/issues/22
+	 *
+	 * Show average hours per working day
+	 *
+	 * @since 2020-07-07
+	 */
+	private int workingWeeksAverage;
 
 	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions) throws IOException {
 		StringBuilder tempReport = new StringBuilder();
@@ -136,37 +165,86 @@ public class TaskReport {
 		DateFormat tempTimeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 
 		String tempCurrentDay = null;
+		// for average calculation
+		Date tempCurrentStartTime = null;
+		Date tempCurrentStopTime = null;
 		// Stop time may be taken from next tasks with different name.
-		String tempCurrentStopTime = null;
+		String tempCurrentStopTimeFormatted = null;
 		StringBuilder tempCurrentDayLine = new StringBuilder();
+		long tempCurrentDayWorkMillis = 0;
+
+		boolean tempDayRelevantForWeeksAverage = false;
+		boolean tempDayRelevantForMonthsAverage = false;
+		long tempTotalWeeksWorkMillis = 0;
+		long tempTotalWeeksWorkingDays = 0;
+		long tempTotalMonthsWorkMillis = 0;
+		long tempTotalMonthsWorkingDays = 0;
+
+		Calendar tempCal = Calendar.getInstance();
+		tempCal.add(Calendar.WEEK_OF_YEAR, -workingWeeksAverage);
+		Date tempFirstDayForWeeksAverage = tempCal.getTime();
+		tempCal = Calendar.getInstance();
+		tempCal.add(Calendar.MONTH, -workingMonthsAverage);
+		Date tempFirstDayForMonthsAverage = tempCal.getTime();
 
 		boolean tempAddNextStartTime = false;
 		boolean tempFirstStartTime = true;
 		for (Task tempTask : aTasks) {
-			String tempDay = tempDateFormat.format(tempTask.getStart());
-			String tempStartTime = tempTimeFormat.format(tempTask.getStart());
+			Date tempTaskStart = tempTask.getStart();
+			String tempDay = tempDateFormat.format(tempTaskStart);
+			String tempStartTime = tempTimeFormat.format(tempTaskStart);
 			String tempTaskName = tempTask.getName();
 			if (tempTaskName.startsWith(dontSumChar.getChar())) {
 				// user made a break
-				if (tempCurrentStopTime != null) {
-					tempCurrentDayLine.append(" - " + tempCurrentStopTime);
+				if (tempCurrentStopTimeFormatted != null) {
+					tempCurrentDayLine.append(" - " + tempCurrentStopTimeFormatted);
+					tempCurrentDayWorkMillis += (tempCurrentStopTime.getTime() - tempCurrentStartTime.getTime());
+					tempCurrentStopTimeFormatted = null;
 					tempCurrentStopTime = null;
 				}
 				tempAddNextStartTime = true;
 			} else {
 				if (tempCurrentDay == null || !tempCurrentDay.equals(tempDay)) {
 					if (tempCurrentDayLine.length() > 0) {
-						if (tempCurrentStopTime != null) {
-							tempCurrentDayLine.append(" - " + tempCurrentStopTime);
+						if (tempCurrentStopTimeFormatted != null) {
+							// Day is finished with work
+							tempCurrentDayLine.append(" - " + tempCurrentStopTimeFormatted);
+							tempCurrentDayWorkMillis += (tempCurrentStopTime.getTime() - tempCurrentStartTime.getTime());
+							tempCurrentStopTimeFormatted = null;
+							tempCurrentStopTime = null;
 						}
+						if (tempCurrentDayWorkMillis > 0) {
+							if (tempDayRelevantForWeeksAverage) {
+								tempTotalWeeksWorkingDays++;
+								tempTotalWeeksWorkMillis += tempCurrentDayWorkMillis;
+							}
+							if (tempDayRelevantForMonthsAverage) {
+								tempTotalMonthsWorkingDays++;
+								tempTotalMonthsWorkMillis += tempCurrentDayWorkMillis;
+							}
+							// add the total day hours:
+							tempCurrentDayLine.append(" (" + formatMillisToHours(tempCurrentDayWorkMillis) + ")");
+						}
+
 						aReport.append(tempCurrentDayLine);
 						aReport.append(CR);
 						tempCurrentDayLine.setLength(0);
+						tempCurrentDayWorkMillis = 0;
 					}
 					tempCurrentDay = tempDay;
 					tempCurrentDayLine.append(tempDay + ":");
 					tempAddNextStartTime = true;
 					tempFirstStartTime = true;
+					if (tempTaskStart.compareTo(tempFirstDayForWeeksAverage) >= 0) {
+						tempDayRelevantForWeeksAverage = true;
+					} else {
+						tempDayRelevantForWeeksAverage = false;
+					}
+					if (tempTaskStart.compareTo(tempFirstDayForMonthsAverage) >= 0) {
+						tempDayRelevantForMonthsAverage = true;
+					} else {
+						tempDayRelevantForMonthsAverage = false;
+					}
 				}
 				if (tempAddNextStartTime) {
 					if (tempFirstStartTime) {
@@ -176,18 +254,62 @@ public class TaskReport {
 						tempCurrentDayLine.append("  / ");
 					}
 					tempCurrentDayLine.append(" " + tempStartTime);
+					tempCurrentStartTime = tempTaskStart;
 					tempAddNextStartTime = false;
 				}
-				tempCurrentStopTime = tempTimeFormat.format(tempTask.getStop());
+				tempCurrentStopTime = tempTask.getStop();
+				tempCurrentStopTimeFormatted = tempTimeFormat.format(tempCurrentStopTime);
 			}
 		}
 		if (tempCurrentDayLine.length() > 0) {
-			if (tempCurrentStopTime != null) {
-				tempCurrentDayLine.append(" - " + tempCurrentStopTime);
+			if (tempCurrentStopTimeFormatted != null) {
+				tempCurrentDayWorkMillis += (tempCurrentStopTime.getTime() - tempCurrentStartTime.getTime());
+				// Last Day is finished with work
+				tempCurrentDayLine.append(" - " + tempCurrentStopTimeFormatted);
+			}
+			if (tempCurrentDayWorkMillis > 0) {
+				if (tempDayRelevantForWeeksAverage) {
+					tempTotalWeeksWorkingDays++;
+					tempTotalWeeksWorkMillis += tempCurrentDayWorkMillis;
+				}
+				if (tempDayRelevantForMonthsAverage) {
+					tempTotalMonthsWorkingDays++;
+					tempTotalMonthsWorkMillis += tempCurrentDayWorkMillis;
+				}
+				// add the total day hours:
+				tempCurrentDayLine.append(" (" + formatMillisToHours(tempCurrentDayWorkMillis) + ")");
 			}
 			aReport.append(tempCurrentDayLine);
 			aReport.append(CR);
 		}
+		if ((tempTotalWeeksWorkingDays > 0 && tempTotalWeeksWorkMillis > 0) || (tempTotalMonthsWorkingDays > 0 && tempTotalMonthsWorkMillis > 0)) {
+			aReport.append("Averages:" + CR);
+			if (tempTotalWeeksWorkingDays > 0) {
+				aReport.append("Last " + workingWeeksAverage + " weeks (since " + tempDateFormat.format(tempFirstDayForWeeksAverage) + ")");
+				aReport.append(CR);
+				aReport.append(" Working days: " + tempTotalWeeksWorkingDays);
+				aReport.append(CR);
+				aReport.append(" Average per day: " + formatMillisToHours(tempTotalWeeksWorkMillis / tempTotalWeeksWorkingDays));
+				aReport.append(CR);
+			}
+			if (tempTotalWeeksWorkingDays > 0) {
+				aReport.append("Last " + workingMonthsAverage + " months (since " + tempDateFormat.format(tempFirstDayForMonthsAverage) + ")");
+				aReport.append(CR);
+				aReport.append(" Working days: " + tempTotalMonthsWorkingDays);
+				aReport.append(CR);
+				aReport.append(" Average per day: " + formatMillisToHours(tempTotalMonthsWorkMillis / tempTotalMonthsWorkingDays));
+				aReport.append(CR);
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	String formatMillisToHours(long aCurrentDayWorkMillis) {
+		ZonedDateTime tempAtZoneZulo = Instant.ofEpochMilli(aCurrentDayWorkMillis).atZone(ZoneId.of("Z"));
+		String tempFormat = DateTimeFormatter.ofPattern("HH:mm").format(tempAtZoneZulo);
+		return tempFormat + " h";
 	}
 
 	private void formatGroup(StringBuilder aReport, List<Task> aGroupTasks, GroupBy aGroupBy, TimeFormat aTimeFormat) {
@@ -377,5 +499,19 @@ public class TaskReport {
 	 */
 	public void setScrollToBottom(boolean aScrollToBottom) {
 		scrollToBottom = aScrollToBottom;
+	}
+
+	/**
+	 *
+	 */
+	public void setWorkingWeeksAverage(int aWorkingWeeksAverage) {
+		workingWeeksAverage = aWorkingWeeksAverage;
+	}
+
+	/**
+	 *
+	 */
+	public void setWorkingMonthsAverage(int aWorkingMonthsAverage) {
+		workingMonthsAverage = aWorkingMonthsAverage;
 	}
 }

@@ -13,4 +13,20 @@ public interface Preferences {
 	 * @since 2020-05-05
 	 */
 	public static final String ALWAYS_ON_TOP_WHEN_PAUSE = "alwaysOnTopWhenPause";
+	/**
+	 * https://github.com/quaddy-services/projekt-task-capturing/issues/22
+	 *
+	 * Show average hours per working day
+	 *
+	 * @since 2020-07-07
+	 */
+	public static final String WORKING_WEEKS_AVERAGE = "workingWeeksAverage";
+	/**
+	 * https://github.com/quaddy-services/projekt-task-capturing/issues/22
+	 *
+	 * Show average hours per working day
+	 *
+	 * @since 2020-07-07
+	 */
+	public static final String WORKING_MONTHS_AVERAGE = "workingMonthsAverage";
 }
