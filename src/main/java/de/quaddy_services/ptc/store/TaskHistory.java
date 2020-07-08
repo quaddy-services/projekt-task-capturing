@@ -342,6 +342,9 @@ public class TaskHistory implements TaskUpdater {
 
 		while (tempC != 3 && iteratorReader.ready()) {
 			tempLine = iteratorReader.readLine();
+			if (tempLine == null) {
+				break;
+			}
 			tempTokens = new StringTokenizer(tempLine, "\t");
 			tempC = tempTokens.countTokens();
 			if (tempC == 3) {

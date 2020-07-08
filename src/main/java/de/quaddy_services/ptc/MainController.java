@@ -774,6 +774,8 @@ public class MainController {
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getDefault() };
 			tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
 			tempTaskReport.setScrollToBottom(true);
+			tempTaskReport.setWorkingWeeksAverage(model.getWorkingWeeksAverage());
+			tempTaskReport.setWorkingMonthsAverage(model.getWorkingMonthsAverage());
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {

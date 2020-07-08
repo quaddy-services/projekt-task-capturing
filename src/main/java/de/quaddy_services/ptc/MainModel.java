@@ -190,4 +190,13 @@ public class MainModel {
 	public boolean isAlwaysOnTopWhenPause() {
 		return Boolean.valueOf(getProperties().getProperty(Preferences.ALWAYS_ON_TOP_WHEN_PAUSE, Boolean.TRUE.toString()));
 	}
+
+	public int getWorkingWeeksAverage() {
+		return Integer.valueOf(getProperties().getProperty(Preferences.WORKING_WEEKS_AVERAGE, "24"));
+	}
+
+	public int getWorkingMonthsAverage() {
+		return Integer.valueOf(getProperties().getProperty(Preferences.WORKING_MONTHS_AVERAGE, "6"));
+	}
+
 }

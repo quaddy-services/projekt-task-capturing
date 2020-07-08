@@ -1,6 +1,6 @@
 package de.quaddy_services.report;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -61,19 +61,19 @@ public class TaskReportTest {
 		System.out.println(tempReportString);
 		String tempExpected =
 		// @formatter:off
-				"01.10.07 00:00 - 02.10.07 00:00 Format: Hour\n" + 
-				"--- Total\n" + 
-				"      00,80 SWD-CR-O4 DownloadSelection\n" + 
-				"            01,43 SWD-SV0036-O4-Upload ErrorQueue\n" + 
-				"      04,98 SWD-SV0036-O4-Upload\n" + 
-				"            00,66 SWD-Support-OMS CareInstructions\n" + 
-				"            00,14 SWD-Support-OMS MSC\n" + 
-				"            01,11 SWD-Support-OMS OMS-Errors\n" + 
-				"      01,91 SWD-Support-OMS\n" + 
-				"      01,31 SWD-other TISA\n" + 
-				"09,00 Sum\n" + 
-				"\n" + 
-				"-------------\n" + 
+				"01.10.07 00:00 - 02.10.07 00:00 Format: Hour\n" +
+				"--- Total\n" +
+				"      00,80 SWD-CR-O4 DownloadSelection\n" +
+				"            01,43 SWD-SV0036-O4-Upload ErrorQueue\n" +
+				"      04,98 SWD-SV0036-O4-Upload\n" +
+				"            00,66 SWD-Support-OMS CareInstructions\n" +
+				"            00,14 SWD-Support-OMS MSC\n" +
+				"            01,11 SWD-Support-OMS OMS-Errors\n" +
+				"      01,91 SWD-Support-OMS\n" +
+				"      01,31 SWD-other TISA\n" +
+				"09,00 Sum\n" +
+				"\n" +
+				"-------------\n" +
 				"";
 				// @formatter:on
 		assertEquals(tempExpected, tempReportString.toString());
@@ -120,7 +120,7 @@ public class TaskReportTest {
 		// @formatter:off
 		String tempExpected=
 				"01.03.20 00:00 - 20.03.20 00:00 Format: Hour\n" +
-				"18.03.20: 08:47 - 15:18  /  15:28 - 18:47\n" +
+				"18.03.20: 08:47 - 15:18  /  15:28 - 18:47 (09:50 h)\n" +
 				"";
 		// @formatter:on
 		assertEquals(tempExpected, tempResultReport.toString());
@@ -161,7 +161,7 @@ public class TaskReportTest {
 		// @formatter:off
 		String tempExpected=
 				"01.03.20 00:00 - 20.03.20 00:00 Format: Hour\n" +
-				"19.03.20: 08:57 - 13:57  /  14:32 - 15:50\n" +
+				"19.03.20: 08:57 - 13:57  /  14:32 - 15:50 (06:18 h)\n" +
 				"";
 		// @formatter:on
 		assertEquals(tempExpected, tempResultReport.toString());
@@ -198,8 +198,91 @@ public class TaskReportTest {
 		// @formatter:off
 		String tempExpected=
 				"01.03.20 00:00 - 20.03.20 00:00 Format: Hour\n" +
-				"18.03.20: 08:47 - 15:18\n" +
+				"18.03.20: 08:47 - 15:18 (06:30 h)\n" +
 				"";
+		// @formatter:on
+		assertEquals(tempExpected, tempResultReport.toString());
+	}
+
+	@Test
+	public void testWorkingTimesReportWithoutDayEnd() throws IOException, ParseException {
+
+		Locale.setDefault(Locale.GERMANY);
+		TaskHistory tempTaskHistory = new TaskHistory() {
+			@Override
+			protected Reader createReader() {
+				// @formatter:off
+				return new StringReader(
+						"IET Meeting	30.06.2020 08:57:18	30.06.2020 09:32:50\n" +
+						"T4S Meeting	30.06.2020 09:32:50	30.06.2020 10:34:10\n" );
+				// @formatter:on
+			}
+		};
+		// Normally today -30 days but take date as testdata above
+		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("01.06.2020").getTime();
+		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.07.2020").getTime();
+
+		final StringBuffer tempReportString = new StringBuffer();
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+
+		StringBuilder tempResultReport = new StringBuilder();
+		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		System.out.println(tempReportString);
+
+		// @formatter:off
+		String tempExpected=
+				"01.06.20 00:00 - 01.07.20 00:00 Format: Hour\n" +
+				"30.06.20: 08:57 - 10:34 (01:36 h)\n" +
+				"";
+		// @formatter:on
+		assertEquals(tempExpected, tempResultReport.toString());
+	}
+
+	@Test
+	public void testWorkingTimesReportWithoutBreakToNextDay() throws IOException, ParseException {
+
+		Locale.setDefault(Locale.GERMANY);
+		TaskHistory tempTaskHistory = new TaskHistory() {
+			@Override
+			protected Reader createReader() {
+				// @formatter:off
+				return new StringReader(
+						"-suspended	22.04.2020 00:00:00	22.04.2020 08:04:22\n" +
+						"IET MavenAPStudio	22.04.2020 08:04:22	22.04.2020 08:10:32\n" +
+						"CSTAC Multibranch	22.04.2020 08:10:32	22.04.2020 08:17:11\n" +
+						"BuyOS Support Password	22.04.2020 08:17:11	22.04.2020 09:24:40\n" +
+						"IET FlowTree	22.04.2020 09:24:40	22.04.2020 09:43:32\n" +
+						"Mail	22.04.2020 09:43:32	22.04.2020 10:57:12\n" +
+						"T4S PO2ERP	22.04.2020 10:57:12	22.04.2020 10:58:02\n" +
+						"T4S Listing2ERP	22.04.2020 10:58:02	22.04.2020 11:14:22\n" +
+						"Mail	22.04.2020 11:14:22	22.04.2020 12:03:38\n" +
+						"-Pause	22.04.2020 17:00:00	22.04.2020 18:00:00\n" +
+						"Kurzarbeit	22.04.2020 18:00:00	22.04.2020 22:00:00\n"+
+						"PTCSTART	23.04.2020 00:00:00	23.04.2020 08:17:11\n" +
+						"Mail	23.04.2020 08:17:10	23.04.2020 08:22:43\n" +
+						""
+						 );
+				// @formatter:on
+			}
+		};
+		// Normally today -30 days but take date as testdata above
+		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("01.04.2020").getTime();
+		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.05.2020").getTime();
+
+		final StringBuffer tempReportString = new StringBuffer();
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+
+		StringBuilder tempResultReport = new StringBuilder();
+		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		System.out.println(tempReportString);
+
+		// @formatter:off
+		String tempExpected=
+				"01.04.20 00:00 - 01.05.20 00:00 Format: Hour\n" +
+				"22.04.20: 08:04 - 12:03  /  18:00 - 22:00 (07:59 h)\n" +
+				"23.04.20: 08:17 - 08:22 (00:05 h)\n";
 		// @formatter:on
 		assertEquals(tempExpected, tempResultReport.toString());
 	}
@@ -233,5 +316,29 @@ public class TaskReportTest {
 		// for easier asserts ignore System.lineSeparator()
 		tempTaskReport.CR = "\n";
 		return tempTaskReport;
+	}
+
+	@Test
+	public void testFormatMillisToHoursOneHour() {
+		String tempFormatted = new TaskReport().formatMillisToHours(3600000);
+		assertEquals("01:00 h", tempFormatted);
+	}
+
+	@Test
+	public void testFormatMillisToHoursOneMinut() {
+		String tempFormatted = new TaskReport().formatMillisToHours(60000);
+		assertEquals("00:01 h", tempFormatted);
+	}
+
+	@Test
+	public void testFormatMillisToHoursZero() {
+		String tempFormatted = new TaskReport().formatMillisToHours(0);
+		assertEquals("00:00 h", tempFormatted);
+	}
+
+	@Test
+	public void testFormatMillisToHours23() {
+		String tempFormatted = new TaskReport().formatMillisToHours(23l * 3600000l);
+		assertEquals("23:00 h", tempFormatted);
 	}
 }

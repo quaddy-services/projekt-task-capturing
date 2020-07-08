@@ -44,6 +44,9 @@ public class PreferencesSelection extends JPanel {
 	private JTextField dataFolder = new JTextField();
 	private JButton dataFolderSelection = new JButton("...");
 
+	private JTextField workingWeeksAverage = new JTextField();
+	private JTextField workingMonthsAverage = new JTextField();
+
 	public PreferencesSelection() {
 		setOpaque(false);
 		setLayout(new GridBagLayout());
@@ -146,6 +149,21 @@ public class PreferencesSelection extends JPanel {
 
 		x = 0;
 		y++;
+		add(new JLabel("Working weeks for daily average:"), createGrid(x, y));
+		x++;
+		add(workingWeeksAverage, createGrid(x, y));
+		workingWeeksAverage.setToolTipText("Average daily hours are calculated based on last .. weeks working (in working times report).");
+
+		x = 0;
+		y++;
+		add(new JLabel("Working months for daily average:"), createGrid(x, y));
+		x++;
+		add(workingMonthsAverage, createGrid(x, y));
+		workingMonthsAverage.setToolTipText("Average daily hours are calculated based on last .. months working (in working times report).");
+
+		// Last section: Defaults
+		x = 0;
+		y++;
 		add(new JLabel(""), createGrid(x, y));
 
 		y++;
@@ -158,6 +176,7 @@ public class PreferencesSelection extends JPanel {
 
 		});
 		add(tempRestore, createGrid(x, y));
+
 	}
 
 	/**
@@ -199,6 +218,8 @@ public class PreferencesSelection extends JPanel {
 		alwaysOnTopWhenPause.setSelected(true);
 		reminderFlashOnMinute.setText("57");
 		dataFolder.setText(FileUtil.getDefaultDataFolder());
+		workingWeeksAverage.setText("24");
+		workingMonthsAverage.setText("6");
 	}
 
 	private GridBagConstraints createGrid(int aI, int aY) {
@@ -225,6 +246,9 @@ public class PreferencesSelection extends JPanel {
 		alwaysOnTopWhenPause.setSelected(Boolean.valueOf(aProperties.getProperty(Preferences.ALWAYS_ON_TOP_WHEN_PAUSE, "" + Boolean.TRUE)));
 		reminderFlashOnMinute.setText(aProperties.getProperty(Preferences.REMINDER_FLASH_ON_MINUTE, "57"));
 		dataFolder.setText(aProperties.getProperty(Preferences.DATA_FOLDER, FileUtil.getDefaultDataFolder()));
+		workingWeeksAverage.setText(aProperties.getProperty(Preferences.WORKING_WEEKS_AVERAGE, "24"));
+		workingMonthsAverage.setText(aProperties.getProperty(Preferences.WORKING_MONTHS_AVERAGE, "6"));
+
 	}
 
 	public Properties getValues() {
@@ -236,8 +260,22 @@ public class PreferencesSelection extends JPanel {
 		tempProperties.setProperty(Preferences.ENTERPRISE_SERVER, enterpriseServer.getText());
 		tempProperties.setProperty(Preferences.ALWAYS_ON_TOP, "" + alwaysOnTop.isSelected());
 		tempProperties.setProperty(Preferences.ALWAYS_ON_TOP_WHEN_PAUSE, "" + alwaysOnTopWhenPause.isSelected());
-		tempProperties.setProperty(Preferences.REMINDER_FLASH_ON_MINUTE, reminderFlashOnMinute.getText());
+		tempProperties.setProperty(Preferences.REMINDER_FLASH_ON_MINUTE, toNumber(reminderFlashOnMinute.getText(), "57"));
 		tempProperties.setProperty(Preferences.DATA_FOLDER, dataFolder.getText());
+		tempProperties.setProperty(Preferences.WORKING_WEEKS_AVERAGE, toNumber(workingWeeksAverage.getText(), "24"));
+		tempProperties.setProperty(Preferences.WORKING_MONTHS_AVERAGE, toNumber(workingMonthsAverage.getText(), "6"));
 		return tempProperties;
+	}
+
+	/**
+	 *
+	 */
+	private String toNumber(String aText, String aDefault) {
+		try {
+			return Integer.valueOf(aText).toString();
+		} catch (RuntimeException e) {
+			LOGGER.info(aText + " is not a number", e);
+			return aDefault;
+		}
 	}
 }
