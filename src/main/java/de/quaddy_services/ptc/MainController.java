@@ -706,7 +706,11 @@ public class MainController {
 					String tempActualTaskName = model.getCurrentTask();
 					JLabel tempInfo = new JLabel("Add " + formatMillisHumanReadable(tempMillisDiff) + " to " + tempActualTaskName + "?");
 					DisplayHelper tempDisplayHelper = new DisplayHelper();
-					boolean tempContinue = tempDisplayHelper.displayComponent(frame, "Confirm Task", tempInfo);
+					DisplayComponentConfig tempDisplayComponentConfig = new DisplayComponentConfig();
+					tempDisplayComponentConfig.setTitle("Confirm Task");
+					tempDisplayComponentConfig.setOkText("Yes");
+					tempDisplayComponentConfig.setCancelText("No");
+					boolean tempContinue = tempDisplayHelper.displayComponent(frame, tempDisplayComponentConfig, tempInfo);
 					if (tempContinue) {
 						// ok
 					} else {
