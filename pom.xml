@@ -16,7 +16,7 @@
 			<!-- https://commons.apache.org/proper/commons-io/index.html -->
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.6</version>
+			<version>2.7</version>
 		</dependency>
 		<dependency>
 			<!-- https://junit.org/junit5/docs/current/user-guide/#dependency-metadata-dependencies -->
