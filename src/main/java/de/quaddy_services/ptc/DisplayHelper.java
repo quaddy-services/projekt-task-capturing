@@ -166,7 +166,13 @@ public class DisplayHelper {
 	}
 
 	public boolean displayComponent(JFrame aFrame, String aTitle, final Component aComponent) {
-		final JDialog tempDialog = new JDialog(aFrame, aTitle);
+		DisplayComponentConfig tempDisplayComponentConfig = new DisplayComponentConfig();
+		tempDisplayComponentConfig.setTitle(aTitle);
+		return displayComponent(aFrame, tempDisplayComponentConfig, aComponent);
+	}
+
+	public boolean displayComponent(JFrame aFrame, DisplayComponentConfig aDisplayComponentConfig, final Component aComponent) {
+		final JDialog tempDialog = new JDialog(aFrame, aDisplayComponentConfig.getTitle());
 		final List<Boolean> tempResult = new LinkedList<Boolean>();
 		Dimension tempScreen = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension tempPref = aComponent.getPreferredSize();
@@ -184,14 +190,14 @@ public class DisplayHelper {
 		tempGBC = new GridBagConstraints();
 		tempGBC.gridy++;
 		tempDialog.getContentPane().add(new JLabel(" "), tempGBC);
-		Action tempActionListener = new AbstractAction("OK") {
+		Action tempActionListener = new AbstractAction(aDisplayComponentConfig.getOkText()) {
 			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempResult.add(Boolean.TRUE);
 				tempDialog.dispose();
 			}
 		};
-		Action tempCancelActionListener = new AbstractAction("Cancel") {
+		Action tempCancelActionListener = new AbstractAction(aDisplayComponentConfig.getCancelText()) {
 			@Override
 			public void actionPerformed(ActionEvent aE) {
 				tempDialog.dispose();

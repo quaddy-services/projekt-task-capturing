@@ -6,6 +6,7 @@ package de.quaddy_services.ptc;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Frame;
@@ -14,6 +15,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.desktop.UserSessionEvent;
+import java.awt.desktop.UserSessionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -28,8 +31,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
@@ -40,6 +41,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -146,6 +148,37 @@ public class MainController {
 		};
 		tempShutdownPendingDetector.setName(tempShutdownPendingDetector.getName() + "ShutdownPendingDetector");
 		Runtime.getRuntime().addShutdownHook(tempShutdownPendingDetector);
+
+		Desktop tempDesktop = Desktop.getDesktop();
+		tempDesktop.addAppEventListener(new UserSessionListener() {
+
+			@Override
+			public void userSessionDeactivated(UserSessionEvent aE) {
+				LOG.info("Desktop:userSessionDeactivated Reason=" + aE.getReason() + " Source=" + aE.getSource());
+				// Windows Key L: 
+				// Tue Aug 31 11:22:49 CEST 2021:info:MainController:userSessionDeactivated Reason=LOCK
+
+				// Close Lid:
+				// Tue Aug 31 11:24:38 CEST 2021:info:MainController:userSessionDeactivated Reason=LOCK
+				// Tue Aug 31 11:24:39 CEST 2021:info:MainController:systemAboutToSleep Source=java.awt.Desktop@741f67cd
+
+				ptcUserStatus = PtcUserStatus.AWAY;
+
+			}
+
+			@Override
+			public void userSessionActivated(UserSessionEvent aE) {
+				LOG.info("Desktop:userSessionActivated Reason=" + aE.getReason() + " Source=" + aE.getSource());
+				// Logon after Windows Key L
+				// Tue Aug 31 11:22:53 CEST 2021:info:MainController:userSessionActivated Reason=LOCK
+
+				// Open Lid:
+				// Tue Aug 31 11:24:56 CEST 2021:info:MainController:systemAwoke Source=java.awt.Desktop@741f67cd
+				// Tue Aug 31 11:25:06 CEST 2021:info:MainController:userSessionActivated Reason=LOCK
+				ptcUserStatus = PtcUserStatus.BACK;
+			}
+		});
+		// SystemSleepListener (without locking desktop) is detected via more than one minute no timer events occurred, see timerRepeats
 	}
 
 	private int lastReminderFlash = -1;
@@ -540,7 +573,7 @@ public class MainController {
 
 	private final DateFormat TIME_HOUR_FORMAT = new SimpleDateFormat("HH:mm");
 	private final DateFormat TIME_MINUTE_FORMAT = new SimpleDateFormat("mm:ss");
-	private final long ONE_HOUR_IN_MILLIS = 3600l * 1000l;
+	private final long ONE_MINUTE_IN_MILLIS = 60l * 1000l;
 
 	private String formatTitleTime(Task aCurrentTask) {
 		Calendar tempCal = Calendar.getInstance();
@@ -648,33 +681,63 @@ public class MainController {
 
 	private long lastTimerRepeats = System.currentTimeMillis();
 
+	private PtcUserStatus ptcUserStatus = PtcUserStatus.AVAILABLE;
+
 	private void timerRepeats() {
 		if (shutdownPending) {
 			LOG.info("Do not timerRepeats as shutdownPending");
 			return;
 		}
-		if (lastTimerRepeats + ONE_HOUR_IN_MILLIS < System.currentTimeMillis()) {
-			BigDecimal tempHours = new BigDecimal(System.currentTimeMillis() - lastTimerRepeats).divide(new BigDecimal(ONE_HOUR_IN_MILLIS), 2,
-					RoundingMode.HALF_UP);
-			String tempActualTaskName = model.getCurrentTask();
-			JLabel tempInfo = new JLabel("Add " + tempHours + " hours to " + tempActualTaskName + "?");
-			DisplayHelper tempDisplayHelper = new DisplayHelper();
-			boolean tempContinue = tempDisplayHelper.displayComponent(frame, "Confirm Task", tempInfo);
-			if (tempContinue) {
-				// ok
+		if (PtcUserStatus.AWAY.equals(ptcUserStatus)) {
+			LOG.debug("Wait for user coming back");
+			return;
+		}
+		long tempCurrentTimeMillis = System.currentTimeMillis();
+		if (PtcUserStatus.BACK.equals(ptcUserStatus) || lastTimerRepeats + ONE_MINUTE_IN_MILLIS < tempCurrentTimeMillis) {
+			LOG.info("Detected userWasAway");
+			ptcUserStatus = PtcUserStatus.AVAILABLE;
+
+			long tempMillisDiff = tempCurrentTimeMillis - lastTimerRepeats;
+			if (tempMillisDiff < 20000) {
+				LOG.info("Ignore too short userAway, just add the millis " + tempMillisDiff);
 			} else {
-				String tempSuspendTaskName = model.getDontSumChar().getChar() + "suspended";
-				timerNewTask(tempSuspendTaskName);
-				timerNewTask(tempActualTaskName);
-				taskAcceptTimer = null;
+				frame.setAlwaysOnTop(true);
+				try {
+					String tempActualTaskName = model.getCurrentTask();
+					JLabel tempInfo = new JLabel("Add " + formatMillisHumanReadable(tempMillisDiff) + " to " + tempActualTaskName + "?");
+					DisplayHelper tempDisplayHelper = new DisplayHelper();
+					DisplayComponentConfig tempDisplayComponentConfig = new DisplayComponentConfig();
+					tempDisplayComponentConfig.setTitle("Confirm Task");
+					tempDisplayComponentConfig.setOkText("Yes");
+					tempDisplayComponentConfig.setCancelText("No");
+					boolean tempContinue = tempDisplayHelper.displayComponent(frame, tempDisplayComponentConfig, tempInfo);
+					if (tempContinue) {
+						// ok
+					} else {
+						String tempSuspendTaskName = model.getDontSumChar().getChar() + "suspended";
+						timerNewTask(tempSuspendTaskName);
+						timerNewTask(tempActualTaskName);
+						taskAcceptTimer = null;
+					}
+				} finally {
+					refreshAlwaysOnTop(model.getCurrentTask());
+				}
 			}
 		}
-		lastTimerRepeats = System.currentTimeMillis();
+		lastTimerRepeats = tempCurrentTimeMillis;
 		saveApplicationStateToModel(false);
 		if (taskAcceptTimer == null) {
 			// Suspend save until new task is "commited"
 			saveModelNoException();
 		}
+	}
+
+	String formatMillisHumanReadable(long aMillis) {
+		Calendar tempCal = Calendar.getInstance(Locale.GERMAN);
+		tempCal.clear();
+		tempCal.add(Calendar.MILLISECOND, (int) aMillis);
+		DateFormat tempTimeFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.GERMAN);
+		return tempTimeFormat.format(tempCal.getTime());
 	}
 
 	private void timerNewTask(String aNewTaskName) {
