@@ -31,7 +31,9 @@ public class ReportSelection extends JPanel {
 
 	public ReportSelection() {
 		setOpaque(false);
-		from.setValue(new Date(0));
+		Calendar tempFirstDayOfCurrentMonth = Calendar.getInstance();
+		tempFirstDayOfCurrentMonth.set(Calendar.DAY_OF_MONTH, 1);
+		from.setValue(tempFirstDayOfCurrentMonth.getTime());
 		to.setValue(new Date());
 		setLayout(new GridBagLayout());
 		int x = 0;
