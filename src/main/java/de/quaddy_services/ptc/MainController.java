@@ -846,9 +846,11 @@ public class MainController {
 		}
 	}
 
+	private ReportSelection reportSelection = new ReportSelection();
+
 	public void showCustomReport() {
 		try {
-			ReportSelection tempReportSelection = new ReportSelection();
+			ReportSelection tempReportSelection = reportSelection;
 			tempReportSelection.setGroupBy(model.getGroupBy());
 			tempReportSelection.setTimeFormat(model.getTimeFormat());
 			tempReportSelection.setReportType(ReportTypeList.DEFAULT);
