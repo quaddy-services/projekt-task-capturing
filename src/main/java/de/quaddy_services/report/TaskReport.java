@@ -72,6 +72,8 @@ public class TaskReport {
 	 */
 	private int workingWeeksAverage;
 
+	private SortSubTasksEnum sortSubTasksEnum = SortSubTasksEnum.NAME;
+
 	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions) throws IOException {
 		StringBuilder tempReport = new StringBuilder();
 		for (int i = 0; i < aGroupBy.length; i++) {
@@ -372,7 +374,15 @@ public class TaskReport {
 
 	private void printTasks(StringBuilder aReport, TimeAndSubtasks aTaskTimes, String aIntend, TimeFormat aTimeFormat) {
 		List<String> tempPrintTasks = new ArrayList<String>(aTaskTimes.subtasks.keySet());
-		Collections.sort(tempPrintTasks);
+		if (sortSubTasksEnum == null || SortSubTasksEnum.NAME.equals(sortSubTasksEnum)) {
+			Collections.sort(tempPrintTasks);
+		} else if (SortSubTasksEnum.DURATION_ASC.equals(sortSubTasksEnum)) {
+			Collections.sort(tempPrintTasks, (aO1, aO2) -> aTaskTimes.subtasks.get(aO1).getTime().compareTo(aTaskTimes.subtasks.get(aO2).getTime()));
+		} else if (SortSubTasksEnum.DURATION_DESC.equals(sortSubTasksEnum)) {
+			Collections.sort(tempPrintTasks, (aO1, aO2) -> -aTaskTimes.subtasks.get(aO1).getTime().compareTo(aTaskTimes.subtasks.get(aO2).getTime()));
+		} else {
+			throw new IllegalArgumentException("Unknown sortSubTaskEnum=" + sortSubTasksEnum);
+		}
 		for (String tempTaskName : tempPrintTasks) {
 			TimeAndSubtasks tempSubTask = aTaskTimes.subtasks.get(tempTaskName);
 			String tempNewIntend = aIntend + " ";
@@ -513,5 +523,19 @@ public class TaskReport {
 	 */
 	public void setWorkingMonthsAverage(int aWorkingMonthsAverage) {
 		workingMonthsAverage = aWorkingMonthsAverage;
+	}
+
+	/**
+	 * @see #sortSubTasksEnum
+	 */
+	public SortSubTasksEnum getSortSubTasksEnum() {
+		return sortSubTasksEnum;
+	}
+
+	/**
+	 * @see #sortSubTasksEnum
+	 */
+	public void setSortSubTasksEnum(SortSubTasksEnum aSortSubTasksEnum) {
+		sortSubTasksEnum = aSortSubTasksEnum;
 	}
 }

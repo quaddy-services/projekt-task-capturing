@@ -66,6 +66,7 @@ public abstract class AbstractEnterpriseUtilRemote implements EnterpriseUtilRemo
 		try {
 			TaskReport tempTaskReport = new TaskReport(aController.getTaskHistory(), aController.getFrame(), model.getTaskDelimiter(), model.getDontSumChar(),
 					getFixedTaskNames());
+			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 			tempTaskReport.setPrettyFormat(false);
 			tempTaskReport.setIgnoreDontSumTasks(true);
 			StringBuilder tempReport = new StringBuilder();
