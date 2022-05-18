@@ -341,4 +341,131 @@ public class TaskReportTest {
 		String tempFormatted = new TaskReport().formatMillisToHours(23l * 3600000l);
 		assertEquals("23:00 h", tempFormatted);
 	}
+
+	@Test
+	public void testSortByDurationDesc() throws IOException, ParseException {
+
+		Locale.setDefault(Locale.GERMANY);
+		TaskHistory tempTaskHistory = new TaskHistory() {
+			@Override
+			protected Reader createReader() {
+				// @formatter:off
+				return new StringReader(
+						"-suspended	22.04.2020 00:00:00	22.04.2020 08:04:22\n" +
+						"IET MavenAPStudio	22.04.2020 08:04:22	22.04.2020 08:10:32\n" +
+						"CSTAC Multibranch	22.04.2020 08:10:32	22.04.2020 08:17:11\n" +
+						"BuyOS Support Password	22.04.2020 08:17:11	22.04.2020 09:24:40\n" +
+						"IET FlowTree	22.04.2020 09:24:40	22.04.2020 09:43:32\n" +
+						"Mail	22.04.2020 09:43:32	22.04.2020 10:57:12\n" +
+						"T4S PO2ERP	22.04.2020 10:57:12	22.04.2020 10:58:02\n" +
+						"T4S Listing2ERP	22.04.2020 10:58:02	22.04.2020 11:14:22\n" +
+						"Mail	22.04.2020 11:14:22	22.04.2020 12:03:38\n" +
+						"-Pause	22.04.2020 17:00:00	22.04.2020 18:00:00\n" +
+						"Kurzarbeit	22.04.2020 18:00:00	22.04.2020 22:00:00\n"+
+						"PTCSTART	23.04.2020 00:00:00	23.04.2020 08:17:11\n" +
+						"Mail	23.04.2020 08:17:10	23.04.2020 08:22:43\n" +
+						""
+						 );
+				// @formatter:on
+			}
+		};
+		// Normally today -30 days but take date as testdata above
+		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("01.04.2020").getTime();
+		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.05.2020").getTime();
+
+		final StringBuffer tempReportString = new StringBuffer();
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+
+		StringBuilder tempResultReport = new StringBuilder();
+		tempTaskReport.setReportType(ReportTypeList.DEFAULT);
+		tempTaskReport.setSortSubTasksEnum(SortSubTasksEnum.DURATION_DESC);
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, GroupByList.getGroupBy(GroupByList.DAY), TimeFormatList.getDefault());
+		System.out.println(tempReportString);
+
+		// @formatter:off
+		String tempExpected= "01.04.20 00:00 - 01.05.20 00:00 Format: Hour\n"
+				+ "--- 22.04.20 (Mi./W17)\n"
+				+ "      08,07 -suspended\n"
+				+ "      04,00 Kurzarbeit\n"
+				+ "      02,05 Mail\n"
+				+ "      01,12 BuyOS Support Password\n"
+				+ "      01,00 -Pause\n"
+				+ "            00,31 IET FlowTree\n"
+				+ "            00,10 IET MavenAPStudio\n"
+				+ "      00,41 IET\n"
+				+ "            00,27 T4S Listing2ERP\n"
+				+ "            00,01 T4S PO2ERP\n"
+				+ "      00,28 T4S\n"
+				+ "      00,11 CSTAC Multibranch\n"
+				+ "07,97 Sum\n"
+				+ "--- 23.04.20 (Do./W17)\n"
+				+ "00,09 Mail\n"
+				+ "";
+		// @formatter:on
+		assertEquals(tempExpected, tempResultReport.toString());
+	}
+
+	@Test
+	public void testSortByDurationAsc() throws IOException, ParseException {
+
+		Locale.setDefault(Locale.GERMANY);
+		TaskHistory tempTaskHistory = new TaskHistory() {
+			@Override
+			protected Reader createReader() {
+				// @formatter:off
+				return new StringReader(
+						"-suspended	22.04.2020 00:00:00	22.04.2020 08:04:22\n" +
+						"IET MavenAPStudio	22.04.2020 08:04:22	22.04.2020 08:10:32\n" +
+						"CSTAC Multibranch	22.04.2020 08:10:32	22.04.2020 08:17:11\n" +
+						"BuyOS Support Password	22.04.2020 08:17:11	22.04.2020 09:24:40\n" +
+						"IET FlowTree	22.04.2020 09:24:40	22.04.2020 09:43:32\n" +
+						"Mail	22.04.2020 09:43:32	22.04.2020 10:57:12\n" +
+						"T4S PO2ERP	22.04.2020 10:57:12	22.04.2020 10:58:02\n" +
+						"T4S Listing2ERP	22.04.2020 10:58:02	22.04.2020 11:14:22\n" +
+						"Mail	22.04.2020 11:14:22	22.04.2020 12:03:38\n" +
+						"-Pause	22.04.2020 17:00:00	22.04.2020 18:00:00\n" +
+						"Kurzarbeit	22.04.2020 18:00:00	22.04.2020 22:00:00\n"+
+						"PTCSTART	23.04.2020 00:00:00	23.04.2020 08:17:11\n" +
+						"Mail	23.04.2020 08:17:10	23.04.2020 08:22:43\n" +
+						""
+						 );
+				// @formatter:on
+			}
+		};
+		// Normally today -30 days but take date as testdata above
+		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("01.04.2020").getTime();
+		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.05.2020").getTime();
+
+		final StringBuffer tempReportString = new StringBuffer();
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+
+		StringBuilder tempResultReport = new StringBuilder();
+		tempTaskReport.setReportType(ReportTypeList.DEFAULT);
+		tempTaskReport.setSortSubTasksEnum(SortSubTasksEnum.DURATION_ASC);
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, GroupByList.getGroupBy(GroupByList.DAY), TimeFormatList.getDefault());
+		System.out.println(tempReportString);
+
+		// @formatter:off
+		String tempExpected= "01.04.20 00:00 - 01.05.20 00:00 Format: Hour\n"
+				+ "--- 22.04.20 (Mi./W17)\n"
+				+ "      00,11 CSTAC Multibranch\n"
+				+ "            00,01 T4S PO2ERP\n"
+				+ "            00,27 T4S Listing2ERP\n"
+				+ "      00,28 T4S\n"
+				+ "            00,10 IET MavenAPStudio\n"
+				+ "            00,31 IET FlowTree\n"
+				+ "      00,41 IET\n"
+				+ "      01,00 -Pause\n"
+				+ "      01,12 BuyOS Support Password\n"
+				+ "      02,05 Mail\n"
+				+ "      04,00 Kurzarbeit\n"
+				+ "      08,07 -suspended\n"
+				+ "07,97 Sum\n"
+				+ "--- 23.04.20 (Do./W17)\n"
+				+ "00,09 Mail\n"
+				+ "";
+		// @formatter:on
+		assertEquals(tempExpected, tempResultReport.toString());
+	}
+
 }

@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import de.quaddy_services.ptc.logging.Logger;
 import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.ptc.store.FileUtil;
+import de.quaddy_services.report.SortSubTasksEnum;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupByList;
 
@@ -46,6 +47,8 @@ public class PreferencesSelection extends JPanel {
 
 	private JTextField workingWeeksAverage = new JTextField();
 	private JTextField workingMonthsAverage = new JTextField();
+
+	private JComboBox sortSubTasks = new JComboBox();
 
 	public PreferencesSelection() {
 		setOpaque(false);
@@ -161,6 +164,14 @@ public class PreferencesSelection extends JPanel {
 		add(workingMonthsAverage, createGrid(x, y));
 		workingMonthsAverage.setToolTipText("Average daily hours are calculated based on last .. months working (in working times report).");
 
+		sortSubTasks.setModel(new DefaultComboBoxModel(SortSubTasksEnum.values()));
+		x = 0;
+		y++;
+		add(new JLabel("Sort Sub Tasks:"), createGrid(x, y));
+		x++;
+		add(sortSubTasks, createGrid(x, y));
+		sortSubTasks.setToolTipText("Sorting direction for sub-tasks in Reports.");
+
 		// Last section: Defaults
 		x = 0;
 		y++;
@@ -220,6 +231,7 @@ public class PreferencesSelection extends JPanel {
 		dataFolder.setText(FileUtil.getDefaultDataFolder());
 		workingWeeksAverage.setText("24");
 		workingMonthsAverage.setText("6");
+		sortSubTasks.setSelectedItem(SortSubTasksEnum.NAME);
 	}
 
 	private GridBagConstraints createGrid(int aI, int aY) {
@@ -248,6 +260,7 @@ public class PreferencesSelection extends JPanel {
 		dataFolder.setText(aProperties.getProperty(Preferences.DATA_FOLDER, FileUtil.getDefaultDataFolder()));
 		workingWeeksAverage.setText(aProperties.getProperty(Preferences.WORKING_WEEKS_AVERAGE, "24"));
 		workingMonthsAverage.setText(aProperties.getProperty(Preferences.WORKING_MONTHS_AVERAGE, "6"));
+		sortSubTasks.setSelectedItem(SortSubTasksEnum.valueOf(aProperties.getProperty(Preferences.SORT_SUB_TASKS, SortSubTasksEnum.NAME.toString())));
 
 	}
 
@@ -264,6 +277,7 @@ public class PreferencesSelection extends JPanel {
 		tempProperties.setProperty(Preferences.DATA_FOLDER, dataFolder.getText());
 		tempProperties.setProperty(Preferences.WORKING_WEEKS_AVERAGE, toNumber(workingWeeksAverage.getText(), "24"));
 		tempProperties.setProperty(Preferences.WORKING_MONTHS_AVERAGE, toNumber(workingMonthsAverage.getText(), "6"));
+		tempProperties.setProperty(Preferences.SORT_SUB_TASKS, ((SortSubTasksEnum) sortSubTasks.getSelectedItem()).toString());
 		return tempProperties;
 	}
 

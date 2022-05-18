@@ -14,6 +14,7 @@ import de.quaddy_services.ptc.preferences.Preferences;
 import de.quaddy_services.ptc.preferences.TaskDelimiter;
 import de.quaddy_services.ptc.preferences.TaskDelimiterList;
 import de.quaddy_services.ptc.store.FileUtil;
+import de.quaddy_services.report.SortSubTasksEnum;
 import de.quaddy_services.report.format.TimeFormat;
 import de.quaddy_services.report.format.TimeFormatList;
 import de.quaddy_services.report.groupby.GroupBy;
@@ -197,6 +198,13 @@ public class MainModel {
 
 	public int getWorkingMonthsAverage() {
 		return Integer.valueOf(getProperties().getProperty(Preferences.WORKING_MONTHS_AVERAGE, "6"));
+	}
+
+	/**
+	 * 
+	 */
+	public SortSubTasksEnum getSortSubTasks() {
+		return SortSubTasksEnum.valueOf(getProperties().getProperty(Preferences.SORT_SUB_TASKS, "NAME"));
 	}
 
 }

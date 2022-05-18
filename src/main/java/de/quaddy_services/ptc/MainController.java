@@ -775,6 +775,7 @@ public class MainController {
 			long tempFrom = tempCal.getTimeInMillis();
 			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
 					enterpriseUtil.getFixedTaskNames());
+			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
@@ -814,6 +815,7 @@ public class MainController {
 			long tempTo = tempCal.getTimeInMillis();
 			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
 					enterpriseUtil.getFixedTaskNames());
+			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
@@ -839,6 +841,7 @@ public class MainController {
 			tempTaskReport.setScrollToBottom(true);
 			tempTaskReport.setWorkingWeeksAverage(model.getWorkingWeeksAverage());
 			tempTaskReport.setWorkingMonthsAverage(model.getWorkingMonthsAverage());
+			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {
@@ -859,6 +862,7 @@ public class MainController {
 			if (tempOk) {
 				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
 						enterpriseUtil.getFixedTaskNames());
+				tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 				long tempFrom = tempReportSelection.getFrom();
 				long tempTo = tempReportSelection.getTo();
 				List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);

@@ -29,4 +29,8 @@ public interface Preferences {
 	 * @since 2020-07-07
 	 */
 	public static final String WORKING_MONTHS_AVERAGE = "workingMonthsAverage";
+	/**
+	 * Sort for sub-tasks in reports
+	 */
+	public static final String SORT_SUB_TASKS = "sortSubTasks";
 }
