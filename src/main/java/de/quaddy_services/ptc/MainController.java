@@ -784,6 +784,44 @@ public class MainController {
 		}
 	}
 
+	/**
+	 * Show last day where entries were captured
+	 */
+	public void showLastDay() {
+		try {
+			Calendar tempCal = Calendar.getInstance();
+			tempCal.set(Calendar.HOUR_OF_DAY, 0);
+			tempCal.set(Calendar.MINUTE, 0);
+			tempCal.set(Calendar.SECOND, 0);
+			tempCal.set(Calendar.MILLISECOND, 0);
+			long tempMidnight = tempCal.getTimeInMillis();
+			long tempTo = tempMidnight;
+			long tempPreviousDayTimestamp = 0;
+			for (Iterator<Task> i = taskHistory.getTaskIterator(); i.hasNext();) {
+				Task tempTask = i.next();
+				if (tempTask.getStart().getTime() < tempMidnight) {
+					tempPreviousDayTimestamp = tempTask.getStart().getTime();
+				}
+			}
+			tempCal = Calendar.getInstance();
+			tempCal.setTimeInMillis(tempPreviousDayTimestamp);
+			tempCal.set(Calendar.HOUR_OF_DAY, 0);
+			tempCal.set(Calendar.MINUTE, 0);
+			tempCal.set(Calendar.SECOND, 0);
+			tempCal.set(Calendar.MILLISECOND, 0);
+			long tempFrom = tempCal.getTimeInMillis();
+
+			TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
+					enterpriseUtil.getFixedTaskNames());
+			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
+			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
+			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
+		} catch (Exception e) {
+			handleException(e);
+		}
+	}
+
 	private List<Action> createAdditionalActions(long tempTo, long tempFrom) {
 		List<Action> tempActions = new ArrayList<Action>();
 		Action tempSaveReportAction = enterpriseUtil.createShowReportAction(this, tempFrom, tempTo);

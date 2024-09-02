@@ -183,7 +183,7 @@ public class TaskHistory implements TaskUpdater {
 		backupFile();
 		List<PosAndContent<Task>> tempList = new ArrayList<PosAndContent<Task>>();
 		RandomAccessFile aContent = new RandomAccessFile(getActualFile(), "r");
-		int aOffset = 1000;
+		int aOffset = 3000;
 		long tempSize = aContent.length();
 		long tempPos = Math.max(0, tempSize - aOffset);
 		aContent.seek(tempPos);
