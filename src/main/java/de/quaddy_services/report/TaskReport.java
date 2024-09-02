@@ -17,6 +17,9 @@ import javax.swing.Action;
 import javax.swing.JFrame;
 
 import de.quaddy_services.ptc.DisplayHelper;
+import de.quaddy_services.ptc.about.AboutInfo;
+import de.quaddy_services.ptc.logging.Logger;
+import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.ptc.preferences.DontSumChar;
 import de.quaddy_services.ptc.preferences.TaskDelimiter;
 import de.quaddy_services.ptc.store.Task;
@@ -29,6 +32,9 @@ import de.quaddy_services.report.groupby.GroupBy;
 
 public class TaskReport {
 	public static final String GROUP_INDICATOR = "--- ";
+
+	private static final Logger LOG = LoggerFactory.getLogger(AboutInfo.class);
+
 	private TaskHistory taskHistory;
 	private JFrame frame;
 	private TaskDelimiter taskDelimiter;
@@ -75,6 +81,7 @@ public class TaskReport {
 	private SortSubTasksEnum sortSubTasksEnum = SortSubTasksEnum.NAME;
 
 	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions) throws IOException {
+		LOG.info("showReport " + new Date(aFrom) + " - " + new Date(aTo));
 		StringBuilder tempReport = new StringBuilder();
 		for (int i = 0; i < aGroupBy.length; i++) {
 			GroupBy tempGroupBy = aGroupBy[i];

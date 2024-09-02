@@ -252,6 +252,13 @@ public class MainView extends JPanel {
 			}
 		});
 		tempMenu.addSeparator();
+		tempMenu.add(new AbstractAction("Show last day") {
+			@Override
+			public void actionPerformed(ActionEvent aE) {
+				tempController.showLastDay();
+			}
+		});
+		tempMenu.addSeparator();
 		tempMenu.add(new AbstractAction("Show this week") {
 			@Override
 			public void actionPerformed(ActionEvent aE) {
