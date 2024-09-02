@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -481,7 +482,60 @@ public class MainController {
 		Task tempCurrentTask;
 		tempCurrentTask = currentTaskUpdater.updateLastTask(tempActualTaskName);
 
+		createLast7DaysReport();
+
 		return tempCurrentTask;
+	}
+
+	/**
+	 * 
+	 */
+	private void createLast7DaysReport() {
+		String tempExportLastSevenDaysFolder = model.getExportLastSevenDaysFolder();
+		if (tempExportLastSevenDaysFolder != null) {
+			try {
+				LinkedList<Date> tempLastSevenDays = new LinkedList<>();
+				Calendar tempCal = Calendar.getInstance();
+				int tempLastDayOfYear = -1;
+				for (Iterator<Task> i = taskHistory.getTaskIterator(); i.hasNext();) {
+					Task tempTask = i.next();
+					tempCal.setTime(tempTask.getStart());
+					int tempDayOfYear = tempCal.get(Calendar.DAY_OF_YEAR);
+					if (tempLastDayOfYear != tempDayOfYear) {
+						tempLastDayOfYear = tempDayOfYear;
+						tempCal.set(Calendar.HOUR_OF_DAY, 0);
+						tempCal.set(Calendar.MINUTE, 0);
+						tempCal.set(Calendar.SECOND, 0);
+						tempCal.set(Calendar.MILLISECOND, 0);
+						tempLastSevenDays.add(tempCal.getTime());
+						while (tempLastSevenDays.size() > 7) {
+							tempLastSevenDays.removeFirst();
+						}
+					}
+				}
+
+				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
+						enterpriseUtil.getFixedTaskNames());
+				tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
+				for (int d = 0; d < tempLastSevenDays.size(); d++) {
+					int tempReverseIndex = (tempLastSevenDays.size() - 1) - d;
+					Date tempFrom = tempLastSevenDays.get(tempReverseIndex);
+					tempCal.setTime(tempFrom);
+					tempCal.add(Calendar.HOUR_OF_DAY, 23);
+					tempCal.add(Calendar.MINUTE, 59);
+					tempCal.add(Calendar.SECOND, 59);
+					Date tempTo = tempCal.getTime();
+					StringBuilder tempReportString = new StringBuilder();
+					tempTaskReport.createReport(tempReportString, tempFrom.getTime(), tempTo.getTime(), GroupByList.getGroupBy(GroupByList.DAY),
+							model.getTimeFormat());
+					try (FileWriter tempOut = new FileWriter(tempExportLastSevenDaysFolder + File.separator + "exportptc-day-" + (d + 1) + ".txt")) {
+						tempOut.write(tempReportString.toString());
+					}
+				}
+			} catch (RuntimeException | IOException e) {
+				LOG.error("Error", e);
+			}
+		}
 	}
 
 	private boolean hasChanged(Properties aProperties, Properties aLastProperties) {

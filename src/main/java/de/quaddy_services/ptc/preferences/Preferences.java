@@ -33,4 +33,11 @@ public interface Preferences {
 	 * Sort for sub-tasks in reports
 	 */
 	public static final String SORT_SUB_TASKS = "sortSubTasks";
+
+	/**
+	 * Automatically export last 7 days
+	 * 
+	 * @since 2024
+	 */
+	public static final String EXPORT_LAST_7_DAYS_FOLDER = "exportLastSevenDaysFolder";
 }
