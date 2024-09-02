@@ -207,4 +207,12 @@ public class MainModel {
 		return SortSubTasksEnum.valueOf(getProperties().getProperty(Preferences.SORT_SUB_TASKS, "NAME"));
 	}
 
+	public String getExportLastSevenDaysFolder() {
+		String tempLastSevenDaysProperty = getProperties().getProperty(Preferences.EXPORT_LAST_7_DAYS_FOLDER);
+		if (tempLastSevenDaysProperty != null && tempLastSevenDaysProperty.trim().length() == 0) {
+			tempLastSevenDaysProperty = null;
+		}
+		return tempLastSevenDaysProperty;
+	}
+
 }

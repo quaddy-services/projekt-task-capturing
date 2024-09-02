@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Properties;
 
 import javax.swing.DefaultComboBoxModel;
@@ -49,6 +50,12 @@ public class PreferencesSelection extends JPanel {
 	private JTextField workingMonthsAverage = new JTextField();
 
 	private JComboBox sortSubTasks = new JComboBox();
+
+	/**
+	 * @since 2024
+	 */
+	private JTextField exportLastSeveDaysFolder = new JTextField();
+	private JButton exportLastSeveDaysFolderSelection = new JButton("...");
 
 	public PreferencesSelection() {
 		setOpaque(false);
@@ -172,6 +179,21 @@ public class PreferencesSelection extends JPanel {
 		add(sortSubTasks, createGrid(x, y));
 		sortSubTasks.setToolTipText("Sorting direction for sub-tasks in Reports.");
 
+		x = 0;
+		y++;
+		add(new JLabel("Export last 7 days to folder:"), createGrid(x, y));
+		x++;
+		JPanel tempExportFolderPanel = createDataFolderPanel(exportLastSeveDaysFolder, exportLastSeveDaysFolderSelection);
+		add(tempExportFolderPanel, createGrid(x, y));
+
+		exportLastSeveDaysFolderSelection.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent aE) {
+				selectExportLastSeveDaysFolder();
+			}
+		});
+
 		// Last section: Defaults
 		x = 0;
 		y++;
@@ -219,6 +241,27 @@ public class PreferencesSelection extends JPanel {
 		}
 	}
 
+	/**
+	 *
+	 */
+	protected void selectExportLastSeveDaysFolder() {
+		String tempCurrentDir = exportLastSeveDaysFolder.getText();
+		if (tempCurrentDir == null || tempCurrentDir.trim().length() == 0) {
+			tempCurrentDir = dataFolder.getText() + File.separator + "export";
+		}
+		File tempDir = new File(tempCurrentDir);
+		if (!tempDir.exists()) {
+			tempDir.mkdirs();
+		}
+		JFileChooser tempJFileChooser = new JFileChooser(tempDir);
+		tempJFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		tempJFileChooser.setAcceptAllFileFilterUsed(false);
+		int tempResult = tempJFileChooser.showOpenDialog(this);
+		if (tempResult == JFileChooser.APPROVE_OPTION) {
+			exportLastSeveDaysFolder.setText(tempJFileChooser.getSelectedFile().getAbsolutePath());
+		}
+	}
+
 	private void restoreDefaults() {
 		taskDelimiter.setSelectedItem(TaskDelimiterList.DEFAULT);
 		dontSumChar.setSelectedItem(DontSumCharList.DEFAULT);
@@ -232,6 +275,7 @@ public class PreferencesSelection extends JPanel {
 		workingWeeksAverage.setText("24");
 		workingMonthsAverage.setText("6");
 		sortSubTasks.setSelectedItem(SortSubTasksEnum.NAME);
+		exportLastSeveDaysFolder.setText("");
 	}
 
 	private GridBagConstraints createGrid(int aI, int aY) {
@@ -261,6 +305,7 @@ public class PreferencesSelection extends JPanel {
 		workingWeeksAverage.setText(aProperties.getProperty(Preferences.WORKING_WEEKS_AVERAGE, "24"));
 		workingMonthsAverage.setText(aProperties.getProperty(Preferences.WORKING_MONTHS_AVERAGE, "6"));
 		sortSubTasks.setSelectedItem(SortSubTasksEnum.valueOf(aProperties.getProperty(Preferences.SORT_SUB_TASKS, SortSubTasksEnum.NAME.toString())));
+		exportLastSeveDaysFolder.setText(aProperties.getProperty(Preferences.EXPORT_LAST_7_DAYS_FOLDER, ""));
 
 	}
 
@@ -278,6 +323,7 @@ public class PreferencesSelection extends JPanel {
 		tempProperties.setProperty(Preferences.WORKING_WEEKS_AVERAGE, toNumber(workingWeeksAverage.getText(), "24"));
 		tempProperties.setProperty(Preferences.WORKING_MONTHS_AVERAGE, toNumber(workingMonthsAverage.getText(), "6"));
 		tempProperties.setProperty(Preferences.SORT_SUB_TASKS, ((SortSubTasksEnum) sortSubTasks.getSelectedItem()).toString());
+		tempProperties.setProperty(Preferences.EXPORT_LAST_7_DAYS_FOLDER, exportLastSeveDaysFolder.getText());
 		return tempProperties;
 	}
 

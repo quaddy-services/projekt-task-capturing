@@ -3,6 +3,7 @@ package de.quaddy_services.ptc;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,6 +24,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
@@ -187,6 +189,17 @@ public class DisplayHelper {
 		JScrollPane tempScroll = new JScrollPane(aComponent);
 		tempScroll.setSize(tempDialog.getSize());
 		tempDialog.getContentPane().add(tempScroll, tempGBC);
+
+		// Jump to bottom
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				JScrollBar vertical = tempScroll.getVerticalScrollBar();
+				int tempMaximum = vertical.getMaximum();
+				vertical.setValue(tempMaximum);
+			}
+		});
+
 		tempGBC = new GridBagConstraints();
 		tempGBC.gridy++;
 		tempDialog.getContentPane().add(new JLabel(" "), tempGBC);
