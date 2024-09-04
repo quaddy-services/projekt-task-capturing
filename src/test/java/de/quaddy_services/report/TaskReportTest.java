@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import de.quaddy_services.ptc.preferences.DontSumCharList;
 import de.quaddy_services.ptc.preferences.TaskDelimiterList;
+import de.quaddy_services.ptc.store.Task;
 import de.quaddy_services.ptc.store.TaskHistory;
 import de.quaddy_services.report.format.ReportTypeList;
 import de.quaddy_services.report.format.TimeFormatList;
@@ -53,7 +54,7 @@ public class TaskReportTest {
 		};
 		StringBuffer tempReportString = new StringBuffer();
 
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
 
 		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("01.10.2007").getTime();
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("02.10.2007").getTime();
@@ -110,7 +111,7 @@ public class TaskReportTest {
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("20.03.2020").getTime();
 
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
@@ -151,7 +152,7 @@ public class TaskReportTest {
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("20.03.2020").getTime();
 
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
@@ -188,7 +189,7 @@ public class TaskReportTest {
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("20.03.2020").getTime();
 
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
@@ -223,7 +224,7 @@ public class TaskReportTest {
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.07.2020").getTime();
 
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
@@ -271,7 +272,7 @@ public class TaskReportTest {
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.05.2020").getTime();
 
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
@@ -290,7 +291,7 @@ public class TaskReportTest {
 	/**
 	 *
 	 */
-	private TaskReport createTestTaskReport(TaskHistory tempTaskHistory, final StringBuffer tempReportString) {
+	private TaskReport createTestTaskReport(List<Task> tempTaskHistory, final StringBuffer tempReportString) {
 		TaskReport tempTaskReport = new TaskReport(tempTaskHistory, null, TaskDelimiterList.getDefault(), DontSumCharList.getDefault(), null) {
 			@Override
 			protected void displayText(String aTempReport, List<Action> aAnActions) {
@@ -374,7 +375,7 @@ public class TaskReportTest {
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.05.2020").getTime();
 
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.DEFAULT);
@@ -437,7 +438,7 @@ public class TaskReportTest {
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.05.2020").getTime();
 
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory, tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.DEFAULT);
