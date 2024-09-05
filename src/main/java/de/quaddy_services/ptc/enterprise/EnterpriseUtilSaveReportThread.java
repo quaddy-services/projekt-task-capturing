@@ -32,7 +32,7 @@ class EnterpriseUtilSaveReportThread extends Thread {
 				tempDisplayHelper.displayText(controller.getFrame(), "Tasks saved.", "Tasks saved to booking system.\n" + result, true);
 
 			}
-		};
+		}
 	};
 
 	EnterpriseUtilSaveReportThread(String aServerName, StringBuilder aTempReport, MainController aController) {

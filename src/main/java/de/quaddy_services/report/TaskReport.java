@@ -23,7 +23,6 @@ import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.ptc.preferences.DontSumChar;
 import de.quaddy_services.ptc.preferences.TaskDelimiter;
 import de.quaddy_services.ptc.store.Task;
-import de.quaddy_services.ptc.store.TaskHistory;
 import de.quaddy_services.report.format.ReportType;
 import de.quaddy_services.report.format.ReportTypeList;
 import de.quaddy_services.report.format.TimeFormat;
@@ -35,7 +34,7 @@ public class TaskReport {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AboutInfo.class);
 
-	private TaskHistory taskHistory;
+	private List<Task> taskHistory;
 	private JFrame frame;
 	private TaskDelimiter taskDelimiter;
 	private DontSumChar dontSumChar;
@@ -44,7 +43,7 @@ public class TaskReport {
 	private boolean ignoreDontSumTasks = false;
 	private ReportType reportType;
 
-	public TaskReport(TaskHistory aTaksHistory, JFrame aFrame, TaskDelimiter aTaskDelimiter, DontSumChar aDontSumChar, List<String> aFixedTaskNames) {
+	public TaskReport(List<Task> aTaksHistory, JFrame aFrame, TaskDelimiter aTaskDelimiter, DontSumChar aDontSumChar, List<String> aFixedTaskNames) {
 		taskHistory = aTaksHistory;
 		frame = aFrame;
 		taskDelimiter = aTaskDelimiter;
@@ -118,7 +117,7 @@ public class TaskReport {
 		aReport.append(aTimeFormat.getName());
 		aReport.append(CR);
 		List<Task> tempTasks = new ArrayList<Task>();
-		for (Iterator<Task> i = taskHistory.getTaskIterator(); i.hasNext();) {
+		for (Iterator<Task> i = taskHistory.iterator(); i.hasNext();) {
 			Task tempTask = i.next();
 			if (tempTask != null) {
 				if (aFrom <= tempTask.getStart().getTime() && tempTask.getStop().getTime() <= aTo) {

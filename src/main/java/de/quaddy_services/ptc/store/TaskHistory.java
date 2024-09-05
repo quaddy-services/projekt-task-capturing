@@ -13,9 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import de.quaddy_services.ptc.logging.Logger;
@@ -275,56 +273,23 @@ public class TaskHistory implements TaskUpdater {
 		fileName = aFileName;
 	}
 
-	private BufferedReader iteratorReader;
-
-	public Iterator<Task> getTaskIterator() throws IOException {
-		iteratorReader = new BufferedReader(createReader());
-		class TaskIterator implements Iterator<Task> {
-			TaskIterator() {
-				super();
-			}
-
-			private Task nextTask;
-
-			@Override
-			public boolean hasNext() {
-				if (nextTask == null) {
-					try {
-						nextTask = readNextTask();
-					} catch (Exception e) {
-						closeIteratorReader();
-						throw new RuntimeException(e);
-					}
-					if (nextTask == null) {
-						closeIteratorReader();
-					}
-				}
-				return nextTask != null;
-			}
-
-			@Override
-			public Task next() {
-				if (!hasNext()) {
-					throw new NoSuchElementException();
-				}
-				Task tempNextTask = nextTask;
-				nextTask = null;
-				return tempNextTask;
-			}
-
-			@Override
-			public void remove() {
-				throw new RuntimeException("Not supported use updateTaskList()");
+	public List<Task> getTasks() throws IOException {
+		List<Task> tempTasks = new ArrayList<>();
+		try (BufferedReader iteratorReader = new BufferedReader(createReader())) {
+			Task nextTask = readNextTask(iteratorReader);
+			while (nextTask != null) {
+				tempTasks.add(nextTask);
+				nextTask = readNextTask(iteratorReader);
 			}
 		}
-		return new TaskIterator();
+		return tempTasks;
 	}
 
 	protected Reader createReader() throws FileNotFoundException {
 		return new FileReader(getActualFile());
 	}
 
-	private Task readNextTask() throws IOException {
+	private Task readNextTask(BufferedReader iteratorReader) throws IOException {
 		if (!iteratorReader.ready()) {
 			return null;
 		}
@@ -368,17 +333,6 @@ public class TaskHistory implements TaskUpdater {
 			return tempTask;
 		}
 		return null;
-	}
-
-	private void closeIteratorReader() {
-		if (iteratorReader != null) {
-			try {
-				iteratorReader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			iteratorReader = null;
-		}
 	}
 
 	/**
