@@ -217,13 +217,13 @@ public class MainController {
 				} finally {
 					tempFrame.setFocusableWindowState(true);
 				}
-			};
+			}
 		});
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				refreshAlwaysOnTop(model.getCurrentTask());
-			};
+			}
 		});
 	}
 
