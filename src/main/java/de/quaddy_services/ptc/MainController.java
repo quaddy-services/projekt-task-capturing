@@ -517,6 +517,8 @@ public class MainController {
 				TaskReport tempTaskReport = new TaskReport(taskHistory, frame, model.getTaskDelimiter(), model.getDontSumChar(),
 						enterpriseUtil.getFixedTaskNames());
 				tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
+				Date tempLastTo = null;
+				GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
 				for (int d = 0; d < tempLastSevenDays.size(); d++) {
 					int tempReverseIndex = (tempLastSevenDays.size() - 1) - d;
 					Date tempFrom = tempLastSevenDays.get(tempReverseIndex);
@@ -526,10 +528,23 @@ public class MainController {
 					tempCal.add(Calendar.SECOND, 59);
 					Date tempTo = tempCal.getTime();
 					StringBuilder tempReportString = new StringBuilder();
-					tempTaskReport.createReport(tempReportString, tempFrom.getTime(), tempTo.getTime(), GroupByList.getGroupBy(GroupByList.DAY),
-							model.getTimeFormat());
-					try (FileWriter tempOut = new FileWriter(tempExportLastSevenDaysFolder + File.separator + "exportptc-day-" + (d + 1) + ".txt")) {
+					tempTaskReport.createReport(tempReportString, tempFrom.getTime(), tempTo.getTime(), tempGroupBy, model.getTimeFormat());
+					String tempTargetFileNameOneDay = tempExportLastSevenDaysFolder + File.separator + "exportptc-day-" + (d + 1) + ".txt";
+					try (FileWriter tempOut = new FileWriter(tempTargetFileNameOneDay)) {
 						tempOut.write(tempReportString.toString());
+					}
+					if (tempLastTo == null) {
+						tempLastTo = tempTo;
+					} else {
+						// d=0: 17.09.24
+						// d=7: 09.09.24
+						StringBuilder tempSomeDaysReportString = new StringBuilder();
+						tempTaskReport.createReport(tempSomeDaysReportString, tempFrom.getTime(), tempLastTo.getTime(), tempGroupBy, model.getTimeFormat());
+						String tempTargetFileNameSomeDays = tempExportLastSevenDaysFolder + File.separator + "exportptc-day-1-to-day-" + (d + 1) + ".txt";
+						try (FileWriter tempOut = new FileWriter(tempTargetFileNameSomeDays)) {
+							tempOut.write(tempSomeDaysReportString.toString());
+						}
+
 					}
 				}
 			} catch (RuntimeException | IOException e) {
