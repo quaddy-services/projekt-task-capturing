@@ -82,15 +82,22 @@ public class TaskReport {
 	public void showReport(long aFrom, long aTo, GroupBy[] aGroupBy, TimeFormat aTimeFormat, List<Action> anActions) throws IOException {
 		LOG.info("showReport " + new Date(aFrom) + " - " + new Date(aTo));
 		StringBuilder tempReport = new StringBuilder();
-		for (int i = 0; i < aGroupBy.length; i++) {
-			GroupBy tempGroupBy = aGroupBy[i];
+		createReport(tempReport, aFrom, aTo, aGroupBy, aTimeFormat);
+
+		displayText(tempReport.toString(), anActions);
+	}
+
+	/**
+	 * createReport with multiple GroupBys
+	 */
+	public void createReport(StringBuilder tempReport, long aFrom, long aTo, GroupBy[] aGroupBys, TimeFormat aTimeFormat) throws IOException {
+		for (int i = 0; i < aGroupBys.length; i++) {
+			GroupBy tempGroupBy = aGroupBys[i];
 			createReport(tempReport, aFrom, aTo, tempGroupBy, aTimeFormat);
 			tempReport.append(CR);
 			tempReport.append("-------------");
 			tempReport.append(CR);
 		}
-
-		displayText(tempReport.toString(), anActions);
 	}
 
 	protected void displayText(String tempReport, List<Action> anActions) {

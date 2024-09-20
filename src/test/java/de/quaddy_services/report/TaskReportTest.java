@@ -115,7 +115,7 @@ public class TaskReportTest {
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
-		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, GroupByList.getGroupBy(GroupByList.NONE), TimeFormatList.getDefault());
 		System.out.println(tempReportString);
 
 		// @formatter:off
@@ -156,7 +156,7 @@ public class TaskReportTest {
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
-		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, GroupByList.getGroupBy(GroupByList.NONE), TimeFormatList.getDefault());
 		System.out.println(tempReportString);
 
 		// @formatter:off
@@ -193,7 +193,7 @@ public class TaskReportTest {
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
-		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, GroupByList.getGroupBy(GroupByList.NONE), TimeFormatList.getDefault());
 		System.out.println(tempReportString);
 
 		// @formatter:off
@@ -228,7 +228,7 @@ public class TaskReportTest {
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
-		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, GroupByList.getGroupBy(GroupByList.NONE), TimeFormatList.getDefault());
 		System.out.println(tempReportString);
 
 		// @formatter:off
@@ -276,7 +276,7 @@ public class TaskReportTest {
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
-		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, null, TimeFormatList.getDefault());
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, GroupByList.getGroupBy(GroupByList.NONE), TimeFormatList.getDefault());
 		System.out.println(tempReportString);
 
 		// @formatter:off
