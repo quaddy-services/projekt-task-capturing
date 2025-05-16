@@ -515,11 +515,11 @@ public class MainController {
 					}
 				}
 
-				TaskReport tempTaskReport = new TaskReport(tempTasks, frame, model.getTaskDelimiter(), model.getDontSumChar(),
-						enterpriseUtil.getFixedTaskNames());
+				TaskReport tempTaskReport = new TaskReport(tempTasks, frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+						.getFixedTaskNames());
 				tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 				Date tempLastTo = null;
-				GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+				GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE)};
 				for (int d = 0; d < tempLastSevenDays.size(); d++) {
 					int tempReverseIndex = (tempLastSevenDays.size() - 1) - d;
 					Date tempFrom = tempLastSevenDays.get(tempReverseIndex);
@@ -588,8 +588,7 @@ public class MainController {
 		tempFileWriter.close();
 	}
 
-	private static final Color[] COLORS = new Color[] { Color.RED, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.DARK_GRAY, Color.WHITE, Color.GREEN,
-			Color.GRAY };
+	private static final Color[] COLORS = new Color[]{Color.RED, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.DARK_GRAY, Color.WHITE, Color.GREEN, Color.GRAY};
 
 	private void updateFrame(Task aCurrentTask) {
 		if (aCurrentTask == null) {
@@ -843,10 +842,10 @@ public class MainController {
 			long tempTo = tempCal.getTimeInMillis();
 			tempCal.add(Calendar.DAY_OF_YEAR, -7);
 			long tempFrom = tempCal.getTimeInMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(),
-					enterpriseUtil.getFixedTaskNames());
+			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+					.getFixedTaskNames());
 			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+			GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE)};
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {
@@ -884,7 +883,7 @@ public class MainController {
 
 			TaskReport tempTaskReport = new TaskReport(tempTasks, frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
 			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+			GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE)};
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {
@@ -921,10 +920,10 @@ public class MainController {
 			long tempFrom = tempCal.getTimeInMillis();
 			tempCal.add(Calendar.DAY_OF_YEAR, +7);
 			long tempTo = tempCal.getTimeInMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(),
-					enterpriseUtil.getFixedTaskNames());
+			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+					.getFixedTaskNames());
 			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+			GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE)};
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {
@@ -942,9 +941,9 @@ public class MainController {
 			tempCal.set(Calendar.MILLISECOND, 0);
 			long tempFrom = tempCal.getTimeInMillis();
 			long tempTo = System.currentTimeMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(),
-					enterpriseUtil.getFixedTaskNames());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getDefault() };
+			List<Task> tempTasks = taskHistory.getTasksWithInternalTasks();
+			TaskReport tempTaskReport = new TaskReport(tempTasks, frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
+			GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getDefault()};
 			tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
 			tempTaskReport.setScrollToBottom(true);
 			tempTaskReport.setWorkingWeeksAverage(model.getWorkingWeeksAverage());
@@ -968,8 +967,8 @@ public class MainController {
 			DisplayHelper tempDisplayHelper = new DisplayHelper();
 			boolean tempOk = tempDisplayHelper.displayComponent(frame, "Select Report...", tempReportSelection);
 			if (tempOk) {
-				TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(),
-						enterpriseUtil.getFixedTaskNames());
+				TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+						.getFixedTaskNames());
 				tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 				long tempFrom = tempReportSelection.getFrom();
 				long tempTo = tempReportSelection.getTo();
@@ -980,7 +979,7 @@ public class MainController {
 				if (ReportTypeList.DEFAULT.equals(tempReportType)) {
 					tempGroupBys = tempReportSelection.getGroupBys();
 				} else {
-					tempGroupBys = new GroupBy[] { GroupByList.getDefault() };
+					tempGroupBys = new GroupBy[]{GroupByList.getDefault()};
 				}
 				tempTaskReport.showReport(tempFrom, tempTo, tempGroupBys, tempReportSelection.getTimeFormat(), tempActions);
 			}

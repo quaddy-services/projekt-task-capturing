@@ -23,6 +23,7 @@ import de.quaddy_services.ptc.logging.LoggerFactory;
 import de.quaddy_services.ptc.preferences.DontSumChar;
 import de.quaddy_services.ptc.preferences.TaskDelimiter;
 import de.quaddy_services.ptc.store.Task;
+import de.quaddy_services.ptc.store.TaskHistory;
 import de.quaddy_services.report.format.ReportType;
 import de.quaddy_services.report.format.ReportTypeList;
 import de.quaddy_services.report.format.TimeFormat;
@@ -209,7 +210,8 @@ public class TaskReport {
 			String tempDay = tempDateFormat.format(tempTaskStart);
 			String tempStartTime = tempTimeFormat.format(tempTaskStart);
 			String tempTaskName = tempTask.getName();
-			if (tempTaskName.startsWith(dontSumChar.getChar())) {
+			if (tempTaskName.startsWith(dontSumChar.getChar()) || TaskHistory.TASK_STARTED.equals(tempTaskName) || TaskHistory.TASK_CLOSED
+					.equals(tempTaskName)) {
 				// user made a break
 				if (tempCurrentStopTimeFormatted != null) {
 					tempCurrentDayLine.append(" - " + tempCurrentStopTimeFormatted);
