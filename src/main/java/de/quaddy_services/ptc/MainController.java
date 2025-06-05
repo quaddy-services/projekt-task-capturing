@@ -515,11 +515,11 @@ public class MainController {
 					}
 				}
 
-				TaskReport tempTaskReport = new TaskReport(tempTasks, frame, model.getTaskDelimiter(), model.getDontSumChar(),
-						enterpriseUtil.getFixedTaskNames());
+				TaskReport tempTaskReport = new TaskReport(tempTasks, frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+						.getFixedTaskNames());
 				tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 				Date tempLastTo = null;
-				GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+				GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE)};
 				for (int d = 0; d < tempLastSevenDays.size(); d++) {
 					int tempReverseIndex = (tempLastSevenDays.size() - 1) - d;
 					Date tempFrom = tempLastSevenDays.get(tempReverseIndex);
@@ -588,8 +588,7 @@ public class MainController {
 		tempFileWriter.close();
 	}
 
-	private static final Color[] COLORS = new Color[] { Color.RED, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.DARK_GRAY, Color.WHITE, Color.GREEN,
-			Color.GRAY };
+	private static final Color[] COLORS = new Color[]{Color.RED, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.DARK_GRAY, Color.WHITE, Color.GREEN, Color.GRAY};
 
 	private void updateFrame(Task aCurrentTask) {
 		if (aCurrentTask == null) {
@@ -752,46 +751,64 @@ public class MainController {
 	private long lastTimerRepeats = System.currentTimeMillis();
 
 	private PtcUserStatus ptcUserStatus = PtcUserStatus.AVAILABLE;
+	private boolean addQuestionPending = false;
 
 	private void timerRepeats() {
 		if (shutdownPending) {
 			LOG.info("Do not timerRepeats as shutdownPending");
 			return;
 		}
+		if (addQuestionPending) {
+			LOG.info("Do not timerRepeats as addQuestionPending");
+			return;
+		}
 		if (PtcUserStatus.AWAY.equals(ptcUserStatus)) {
 			LOG.debug("Wait for user coming back");
 			return;
 		}
+		boolean tempUserWasAway = false;
 		long tempCurrentTimeMillis = System.currentTimeMillis();
-		if (PtcUserStatus.BACK.equals(ptcUserStatus) || lastTimerRepeats + ONE_MINUTE_IN_MILLIS < tempCurrentTimeMillis) {
-			LOG.info("Detected userWasAway");
+		long tempMillisDiff = tempCurrentTimeMillis - lastTimerRepeats;
+		if (PtcUserStatus.BACK.equals(ptcUserStatus)) {
+			LOG.info("Detected userWasAway via ptcUserStatus");
 			ptcUserStatus = PtcUserStatus.AVAILABLE;
-
-			long tempMillisDiff = tempCurrentTimeMillis - lastTimerRepeats;
+			tempUserWasAway = true;
+		} else if (lastTimerRepeats + ONE_MINUTE_IN_MILLIS < tempCurrentTimeMillis) {
+			LOG.info("Detected userWasAway via lastTimerRepeats=" + lastTimerRepeats + " tempCurrentTimeMillis=" + tempCurrentTimeMillis + " tempMillisDiff=" +
+					tempMillisDiff);
 			if (tempMillisDiff < 20000) {
 				LOG.info("Ignore too short userAway, just add the millis " + tempMillisDiff);
 			} else {
-				frame.setAlwaysOnTop(true);
-				try {
-					String tempActualTaskName = model.getCurrentTask();
-					JLabel tempInfo = new JLabel("Add " + formatMillisHumanReadable(tempMillisDiff) + " to " + tempActualTaskName + "?");
-					DisplayHelper tempDisplayHelper = new DisplayHelper();
-					DisplayComponentConfig tempDisplayComponentConfig = new DisplayComponentConfig();
-					tempDisplayComponentConfig.setTitle("Confirm Task");
-					tempDisplayComponentConfig.setOkText("Yes");
-					tempDisplayComponentConfig.setCancelText("No");
-					boolean tempContinue = tempDisplayHelper.displayComponent(frame, tempDisplayComponentConfig, tempInfo);
-					if (tempContinue) {
-						// ok
-					} else {
-						String tempSuspendTaskName = model.getDontSumChar().getChar() + "suspended";
-						timerNewTask(tempSuspendTaskName);
-						timerNewTask(tempActualTaskName);
-						taskAcceptTimer = null;
-					}
-				} finally {
-					refreshAlwaysOnTop(model.getCurrentTask());
+				tempUserWasAway = true;
+			}
+			if (!PtcUserStatus.AVAILABLE.equals(ptcUserStatus)) {
+				LOG.info("set ptcUserStatus to " + PtcUserStatus.AVAILABLE + " ptcUserStatus=" + ptcUserStatus);
+				ptcUserStatus = PtcUserStatus.AVAILABLE;
+			}
+		}
+		if (tempUserWasAway) {
+			frame.setAlwaysOnTop(true);
+			addQuestionPending = true;
+			try {
+				String tempActualTaskName = model.getCurrentTask();
+				JLabel tempInfo = new JLabel("Add " + formatMillisHumanReadable(tempMillisDiff) + " to " + tempActualTaskName + "?");
+				DisplayHelper tempDisplayHelper = new DisplayHelper();
+				DisplayComponentConfig tempDisplayComponentConfig = new DisplayComponentConfig();
+				tempDisplayComponentConfig.setTitle("Confirm Task");
+				tempDisplayComponentConfig.setOkText("Yes");
+				tempDisplayComponentConfig.setCancelText("No");
+				boolean tempContinue = tempDisplayHelper.displayComponent(frame, tempDisplayComponentConfig, tempInfo);
+				if (tempContinue) {
+					// ok
+				} else {
+					String tempSuspendTaskName = model.getDontSumChar().getChar() + "suspended";
+					timerNewTask(tempSuspendTaskName);
+					timerNewTask(tempActualTaskName);
+					taskAcceptTimer = null;
 				}
+			} finally {
+				refreshAlwaysOnTop(model.getCurrentTask());
+				addQuestionPending = false;
 			}
 		}
 		lastTimerRepeats = tempCurrentTimeMillis;
@@ -843,10 +860,10 @@ public class MainController {
 			long tempTo = tempCal.getTimeInMillis();
 			tempCal.add(Calendar.DAY_OF_YEAR, -7);
 			long tempFrom = tempCal.getTimeInMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(),
-					enterpriseUtil.getFixedTaskNames());
+			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+					.getFixedTaskNames());
 			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+			GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE)};
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {
@@ -884,7 +901,7 @@ public class MainController {
 
 			TaskReport tempTaskReport = new TaskReport(tempTasks, frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
 			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+			GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE)};
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {
@@ -921,10 +938,10 @@ public class MainController {
 			long tempFrom = tempCal.getTimeInMillis();
 			tempCal.add(Calendar.DAY_OF_YEAR, +7);
 			long tempTo = tempCal.getTimeInMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(),
-					enterpriseUtil.getFixedTaskNames());
+			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+					.getFixedTaskNames());
 			tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE) };
+			GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getGroupBy(GroupByList.DAY), GroupByList.getGroupBy(GroupByList.NONE)};
 			List<Action> tempActions = createAdditionalActions(tempTo, tempFrom);
 			tempTaskReport.showReport(tempFrom, tempTo, tempGroupBy, model.getTimeFormat(), tempActions);
 		} catch (Exception e) {
@@ -942,9 +959,9 @@ public class MainController {
 			tempCal.set(Calendar.MILLISECOND, 0);
 			long tempFrom = tempCal.getTimeInMillis();
 			long tempTo = System.currentTimeMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(),
-					enterpriseUtil.getFixedTaskNames());
-			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getDefault() };
+			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+					.getFixedTaskNames());
+			GroupBy[] tempGroupBy = new GroupBy[]{GroupByList.getDefault()};
 			tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
 			tempTaskReport.setScrollToBottom(true);
 			tempTaskReport.setWorkingWeeksAverage(model.getWorkingWeeksAverage());
@@ -968,8 +985,8 @@ public class MainController {
 			DisplayHelper tempDisplayHelper = new DisplayHelper();
 			boolean tempOk = tempDisplayHelper.displayComponent(frame, "Select Report...", tempReportSelection);
 			if (tempOk) {
-				TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(),
-						enterpriseUtil.getFixedTaskNames());
+				TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(), model.getDontSumChar(), enterpriseUtil
+						.getFixedTaskNames());
 				tempTaskReport.setSortSubTasksEnum(model.getSortSubTasks());
 				long tempFrom = tempReportSelection.getFrom();
 				long tempTo = tempReportSelection.getTo();
@@ -980,7 +997,7 @@ public class MainController {
 				if (ReportTypeList.DEFAULT.equals(tempReportType)) {
 					tempGroupBys = tempReportSelection.getGroupBys();
 				} else {
-					tempGroupBys = new GroupBy[] { GroupByList.getDefault() };
+					tempGroupBys = new GroupBy[]{GroupByList.getDefault()};
 				}
 				tempTaskReport.showReport(tempFrom, tempTo, tempGroupBys, tempReportSelection.getTimeFormat(), tempActions);
 			}
