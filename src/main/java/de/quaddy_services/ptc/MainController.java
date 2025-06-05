@@ -978,7 +978,8 @@ public class MainController {
 			tempCal.set(Calendar.MILLISECOND, 0);
 			long tempFrom = tempCal.getTimeInMillis();
 			long tempTo = System.currentTimeMillis();
-			TaskReport tempTaskReport = new TaskReport(taskHistory.getTasks(), frame, model.getTaskDelimiter(),
+			List<Task> tempTasks = taskHistory.getTasksWithInternalTasks();
+			TaskReport tempTaskReport = new TaskReport(tempTasks, frame, model.getTaskDelimiter(),
 					model.getDontSumChar(), enterpriseUtil.getFixedTaskNames());
 			GroupBy[] tempGroupBy = new GroupBy[] { GroupByList.getDefault() };
 			tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);

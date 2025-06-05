@@ -274,12 +274,16 @@ public class TaskHistory implements TaskUpdater {
 	}
 
 	public List<Task> getTasks() throws IOException {
+		return getTasks(true);
+	}
+
+	private List<Task> getTasks(boolean aSkipInternalTasks) throws IOException {
 		List<Task> tempTasks = new ArrayList<>();
 		try (BufferedReader iteratorReader = new BufferedReader(createReader())) {
-			Task nextTask = readNextTask(iteratorReader);
+			Task nextTask = readNextTask(iteratorReader, aSkipInternalTasks);
 			while (nextTask != null) {
 				tempTasks.add(nextTask);
-				nextTask = readNextTask(iteratorReader);
+				nextTask = readNextTask(iteratorReader, aSkipInternalTasks);
 			}
 		}
 		return tempTasks;
@@ -289,7 +293,7 @@ public class TaskHistory implements TaskUpdater {
 		return new FileReader(getActualFile());
 	}
 
-	private Task readNextTask(BufferedReader iteratorReader) throws IOException {
+	private Task readNextTask(BufferedReader iteratorReader, boolean aSkipInternal) throws IOException {
 		if (!iteratorReader.ready()) {
 			return null;
 		}
@@ -300,7 +304,7 @@ public class TaskHistory implements TaskUpdater {
 		StringTokenizer tempTokens = new StringTokenizer(tempLine, "\t");
 		int tempC = tempTokens.countTokens();
 		String tempTaskName = tempTokens.nextToken();
-		if (isInternalTask(tempTaskName)) {
+		if (aSkipInternal && isInternalTask(tempTaskName)) {
 			// Skip
 			tempC = 0;
 		}
@@ -389,5 +393,13 @@ public class TaskHistory implements TaskUpdater {
 				tempContent.write(format(tempPosAndContent.getLine()));
 			}
 		}
+	}
+
+	/**
+	 * @throws IOException 
+	 * 
+	 */
+	public List<Task> getTasksWithInternalTasks() throws IOException {
+		return getTasks(false);
 	}
 }

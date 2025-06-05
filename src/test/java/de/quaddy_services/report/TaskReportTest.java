@@ -58,7 +58,7 @@ public class TaskReportTest {
 
 		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("01.10.2007").getTime();
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("02.10.2007").getTime();
-		tempTaskReport.showReport(tempFrom, tempTo, new GroupBy[] { GroupByList.getGroupBy(GroupByList.NONE) }, TimeFormatList.getDefault(), null);
+		tempTaskReport.showReport(tempFrom, tempTo, new GroupBy[]{GroupByList.getGroupBy(GroupByList.NONE)}, TimeFormatList.getDefault(), null);
 		System.out.println(tempReportString);
 		String tempExpected =
 		// @formatter:off
@@ -272,7 +272,7 @@ public class TaskReportTest {
 		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("01.05.2020").getTime();
 
 		final StringBuffer tempReportString = new StringBuffer();
-		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasks(), tempReportString);
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasksWithInternalTasks(), tempReportString);
 
 		StringBuilder tempResultReport = new StringBuilder();
 		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
@@ -465,6 +465,47 @@ public class TaskReportTest {
 				+ "--- 23.04.20 (Do./W17)\n"
 				+ "00,09 Mail\n"
 				+ "";
+		// @formatter:on
+		assertEquals(tempExpected, tempResultReport.toString());
+	}
+
+
+	/**
+	 * PTCSTART
+	 */
+	@Test
+	public void testWorkingTimesWithReboot() throws IOException, ParseException {
+
+		Locale.setDefault(Locale.GERMANY);
+		TaskHistory tempTaskHistory = new TaskHistory() {
+			@Override
+			protected Reader createReader() {
+				// @formatter:off
+				return new StringReader(
+						"Admin PC Restart	16.05.2025 10:21:39	16.05.2025 10:27:20\n" + 
+						"PTCSTART	16.05.2025 10:27:20	16.05.2025 11:25:29\n" + 
+						"Admin PC Restart	16.05.2025 11:20:12	16.05.2025 11:59:09\n" + 
+						"" );
+				// @formatter:on
+			}
+		};
+		// Normally today -30 days but take date as testdata above
+		long tempFrom = new SimpleDateFormat("dd.MM.yyyy").parse("16.05.2025").getTime();
+		long tempTo = new SimpleDateFormat("dd.MM.yyyy").parse("17.05.2025").getTime();
+
+		final StringBuffer tempReportString = new StringBuffer();
+		TaskReport tempTaskReport = createTestTaskReport(tempTaskHistory.getTasksWithInternalTasks(), tempReportString);
+
+		StringBuilder tempResultReport = new StringBuilder();
+		tempTaskReport.setReportType(ReportTypeList.WORKING_TIMES);
+		tempTaskReport.createReport(tempResultReport, tempFrom, tempTo, GroupByList.getGroupBy(GroupByList.NONE), TimeFormatList.getDefault());
+		System.out.println(tempReportString);
+
+		// @formatter:off
+		String tempExpected=
+				"16.05.25 00:00 - 17.05.25 00:00 Format: Hour\n" + 
+				"16.05.25: 10:21 - 10:27  /  11:20 - 11:59 (00:44 h)\n" + 
+				"";
 		// @formatter:on
 		assertEquals(tempExpected, tempResultReport.toString());
 	}
