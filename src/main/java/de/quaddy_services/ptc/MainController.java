@@ -765,49 +765,65 @@ public class MainController {
 	private long lastTimerRepeats = System.currentTimeMillis();
 
 	private PtcUserStatus ptcUserStatus = PtcUserStatus.AVAILABLE;
+	private boolean addQuestionPending = false;
 
 	private void timerRepeats() {
 		if (shutdownPending) {
 			LOG.info("Do not timerRepeats as shutdownPending");
 			return;
 		}
+		if (addQuestionPending) {
+			LOG.info("Do not timerRepeats as addQuestionPending");
+			return;
+		}
 		if (PtcUserStatus.AWAY.equals(ptcUserStatus)) {
 			LOG.debug("Wait for user coming back");
 			return;
 		}
+		boolean tempUserWasAway = false;
 		long tempCurrentTimeMillis = System.currentTimeMillis();
-		if (PtcUserStatus.BACK.equals(ptcUserStatus)
-				|| lastTimerRepeats + ONE_MINUTE_IN_MILLIS < tempCurrentTimeMillis) {
-			LOG.info("Detected userWasAway");
+		long tempMillisDiff = tempCurrentTimeMillis - lastTimerRepeats;
+		if (PtcUserStatus.BACK.equals(ptcUserStatus)) {
+			LOG.info("Detected userWasAway via ptcUserStatus");
 			ptcUserStatus = PtcUserStatus.AVAILABLE;
-
-			long tempMillisDiff = tempCurrentTimeMillis - lastTimerRepeats;
+			tempUserWasAway = true;
+		} else if (lastTimerRepeats + ONE_MINUTE_IN_MILLIS < tempCurrentTimeMillis) {
+			LOG.info("Detected userWasAway via lastTimerRepeats=" + lastTimerRepeats + " tempCurrentTimeMillis="
+					+ tempCurrentTimeMillis + " tempMillisDiff=" + tempMillisDiff);
 			if (tempMillisDiff < 20000) {
 				LOG.info("Ignore too short userAway, just add the millis " + tempMillisDiff);
 			} else {
-				frame.setAlwaysOnTop(true);
-				try {
-					String tempActualTaskName = model.getCurrentTask();
-					JLabel tempInfo = new JLabel(
-							"Add " + formatMillisHumanReadable(tempMillisDiff) + " to " + tempActualTaskName + "?");
-					DisplayHelper tempDisplayHelper = new DisplayHelper();
-					DisplayComponentConfig tempDisplayComponentConfig = new DisplayComponentConfig();
-					tempDisplayComponentConfig.setTitle("Confirm Task");
-					tempDisplayComponentConfig.setOkText("Yes");
-					tempDisplayComponentConfig.setCancelText("No");
-					boolean tempContinue = tempDisplayHelper.displayComponent(frame, tempDisplayComponentConfig,
-							tempInfo);
-					if (tempContinue) {
-						// ok
-					} else {
-						String tempSuspendTaskName = model.getDontSumChar().getChar() + "suspended";
-						timerNewTask(tempSuspendTaskName);
-						timerNewTask(tempActualTaskName);
-						taskAcceptTimer = null;
-					}
-				} finally {
-					refreshAlwaysOnTop(model.getCurrentTask());
+				tempUserWasAway = true;
+			}
+			if (!PtcUserStatus.AVAILABLE.equals(ptcUserStatus)) {
+				LOG.info("set ptcUserStatus to " + PtcUserStatus.AVAILABLE + " ptcUserStatus=" + ptcUserStatus);
+				ptcUserStatus = PtcUserStatus.AVAILABLE;
+			}
+		}
+		if (tempUserWasAway) {
+			frame.setAlwaysOnTop(true);
+			addQuestionPending = true;
+			try {
+				String tempActualTaskName = model.getCurrentTask();
+				JLabel tempInfo = new JLabel(
+						"Add " + formatMillisHumanReadable(tempMillisDiff) + " to " + tempActualTaskName + "?");
+				DisplayHelper tempDisplayHelper = new DisplayHelper();
+				DisplayComponentConfig tempDisplayComponentConfig = new DisplayComponentConfig();
+				tempDisplayComponentConfig.setTitle("Confirm Task");
+				tempDisplayComponentConfig.setOkText("Yes");
+				tempDisplayComponentConfig.setCancelText("No");
+				boolean tempContinue = tempDisplayHelper.displayComponent(frame, tempDisplayComponentConfig, tempInfo);
+				if (tempContinue) {
+					// ok
+				} else {
+					String tempSuspendTaskName = model.getDontSumChar().getChar() + "suspended";
+					timerNewTask(tempSuspendTaskName);
+					timerNewTask(tempActualTaskName);
+					taskAcceptTimer = null;
 				}
+			} finally {
+				refreshAlwaysOnTop(model.getCurrentTask());
+				addQuestionPending = false;
 			}
 		}
 		lastTimerRepeats = tempCurrentTimeMillis;
