@@ -826,7 +826,7 @@ public class MainController {
 				addQuestionPending = false;
 			}
 		}
-		lastTimerRepeats = tempCurrentTimeMillis;
+		lastTimerRepeats = System.currentTimeMillis();
 		saveApplicationStateToModel(false);
 		if (taskAcceptTimer == null) {
 			// Suspend save until new task is "commited"
