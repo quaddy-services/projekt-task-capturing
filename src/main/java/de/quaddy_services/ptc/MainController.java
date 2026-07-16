@@ -495,7 +495,7 @@ public class MainController {
 			if (System.currentTimeMillis() > nextLast7DaysReport) {
 				createLast7DaysReport();
 				// export each 10 minutes.
-				nextLast7DaysReport = System.currentTimeMillis() + 10 * 60_000l;
+				nextLast7DaysReport = System.currentTimeMillis() + (10 * 60_000l);
 			}
 		}
 
