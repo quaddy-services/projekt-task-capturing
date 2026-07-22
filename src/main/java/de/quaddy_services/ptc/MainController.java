@@ -25,13 +25,11 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -384,7 +382,7 @@ public class MainController {
 		}
 		try {
 			saveApplicationStateToModel(true);
-			saveModel();
+			saveModel(true);
 			taskHistory.updateLastTask(TaskHistory.TASK_CLOSED);
 			fireNetworkDriveOk();
 		} catch (NetworkDriveNotAvailable e) {
@@ -441,7 +439,7 @@ public class MainController {
 
 	public void saveModelNoException() {
 		try {
-			final Task tempCurrentTask = saveModel();
+			final Task tempCurrentTask = saveModel(false);
 			updateFrame(tempCurrentTask);
 			fireNetworkDriveOk();
 		} catch (NetworkDriveNotAvailable e) {
@@ -475,8 +473,9 @@ public class MainController {
 
 	private Properties lastProperties;
 
-	private Task saveModel()
-			throws MalformedURLException, FileNotFoundException, IOException, NetworkDriveNotAvailable {
+	private long nextLast7DaysReport = 0;
+
+	private Task saveModel(boolean anExitFlag) throws IOException, NetworkDriveNotAvailable {
 		File tempFile = getStoreFile();
 
 		Properties tempProperties = model.getProperties();
@@ -490,7 +489,15 @@ public class MainController {
 		Task tempCurrentTask;
 		tempCurrentTask = currentTaskUpdater.updateLastTask(tempActualTaskName);
 
-		createLast7DaysReport();
+		if (anExitFlag) {
+			createLast7DaysReport();
+		} else {
+			if (System.currentTimeMillis() > nextLast7DaysReport) {
+				createLast7DaysReport();
+				// export each 10 minutes.
+				nextLast7DaysReport = System.currentTimeMillis() + (10 * 60_000l);
+			}
+		}
 
 		return tempCurrentTask;
 	}
@@ -500,7 +507,7 @@ public class MainController {
 	 */
 	private void createLast7DaysReport() {
 		String tempExportLastSevenDaysFolder = model.getExportLastSevenDaysFolder();
-		if (tempExportLastSevenDaysFolder != null) {
+		if (tempExportLastSevenDaysFolder != null && tempExportLastSevenDaysFolder.trim().length() > 0) {
 			try {
 				LinkedList<Date> tempLastSevenDays = new LinkedList<>();
 				Calendar tempCal = Calendar.getInstance();
